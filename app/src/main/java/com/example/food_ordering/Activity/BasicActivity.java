@@ -15,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class BasicActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseDatabase database;
-    public String TAG="uilover";
+    public String TAG="foodapp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
