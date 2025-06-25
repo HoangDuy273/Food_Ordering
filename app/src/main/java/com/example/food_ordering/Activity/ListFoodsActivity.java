@@ -1,33 +1,30 @@
 package com.example.food_ordering.Activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.food_ordering.Adapter.FoodListAdapter;
+import com.example.food_ordering.Domain.Foods;
 import com.example.food_ordering.databinding.ActivityListFoodsBinding;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ListFoodsActivity extends BaseActivity {
-    ActivityListFoodsBinding binding;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private RecyclerView.Adapter adapterListFoods;
+public class ListFoodsActivity extends BasicActivity {
+    private ActivityListFoodsBinding binding;
+    private FoodListAdapter adapterListFoods;
     private int categoryId;
     private String categoryName;
     private String searchText;
     private boolean isSearch;
-
-    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,53 +36,115 @@ public class ListFoodsActivity extends BaseActivity {
         initList();
     }
 
+    private void getIntentExtra() {
+        categoryId = getIntent().getIntExtra("CategoryId", 0);
+        categoryName = getIntent().getStringExtra("CategoryName");
+        searchText = getIntent().getStringExtra("searchText");
+        isSearch = getIntent().getBooleanExtra("isSearch", false);
+
+        binding.titleTxt.setText(categoryName != null ? categoryName : "Foods");
+        binding.backBtn.setOnClickListener(v -> finish());
+    }
+
     private void initList() {
-        DatabaseReference myRef = database.getReference("Foods");
         binding.progressBar.setVisibility(View.VISIBLE);
-        ArrayList<Foods> list = new ArrayList<>();
 
-        Query query;
-        if (isSearch) {
-            query = myRef.orderByChild("Title").startAt(searchText).endAt(searchText + '\uf8ff');
+        if (isSearch && searchText != null && !searchText.trim().isEmpty()) {
+            searchFoodsByName(searchText.trim());
         } else {
-            query = myRef.orderByChild("CategoryId").equalTo(categoryId);
+            getAllFoods();
         }
+    }
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getAllFoods() {
+        Call<List<Foods>> call = apiService.getAllFoods();
+        call.enqueue(new Callback<List<Foods>>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot issue : snapshot.getChildren()) {
-                        Foods food = issue.getValue(Foods.class);
-                        if (food != null) {
-                            list.add(food);
+            public void onResponse(Call<List<Foods>> call, Response<List<Foods>> response) {
+                binding.progressBar.setVisibility(View.GONE);
+
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Foods> allFoods = response.body();
+                    List<Foods> filteredFoods = new ArrayList<>();
+
+                    for (Foods food : allFoods) {
+                        if (!isSearch || categoryId == 0 || String.valueOf(categoryId).equals(food.getCategory())) {
+                            filteredFoods.add(food);
                         }
                     }
 
-                    if (!list.isEmpty()) {
-                        binding.foodListView.setLayoutManager(new GridLayoutManager(ListFoodsActivity.this, 2));
-                        adapterListFoods = new FoodListAdapter(list);
-                        binding.foodListView.setAdapter(adapterListFoods);
-                    }
-
-                    binding.progressBar.setVisibility(View.GONE);
+                    setupRecyclerView(filteredFoods);
+                } else {
+                    handleError("Failed to load foods: " + response.message());
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onFailure(Call<List<Foods>> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
+                handleError("Network error: " + t.getMessage());
+                Log.e("ListFoodsActivity", "Error loading foods", t);
             }
         });
     }
 
-    private void getIntentExtra() {
-        categoryId = getIntent().getIntExtra("CategoryId", 0);
-        categoryName = getIntent().getStringExtra("Category");
-        searchText = getIntent().getStringExtra("text");
-        isSearch = getIntent().getBooleanExtra("isSearch", false);
+    private void searchFoodsByName(String searchQuery) {
+        Call<List<Foods>> call = apiService.getAllFoods();
+        call.enqueue(new Callback<List<Foods>>() {
+            @Override
+            public void onResponse(Call<List<Foods>> call, Response<List<Foods>> response) {
+                binding.progressBar.setVisibility(View.GONE);
 
-        binding.titleTxt.setText(categoryName);
-        binding.backBtn.setOnClickListener(v -> finish());
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Foods> allFoods = response.body();
+                    List<Foods> searchResults = new ArrayList<>();
+
+                    String query = searchQuery.toLowerCase();
+                    for (Foods food : allFoods) {
+                        if ((food.getTitle() != null && food.getTitle().toLowerCase().contains(query)) ||
+                                (food.getDescription() != null && food.getDescription().toLowerCase().contains(query))) {
+                            searchResults.add(food);
+                        }
+                    }
+
+                    setupRecyclerView(searchResults);
+
+                    if (searchResults.isEmpty()) {
+                        Toast.makeText(ListFoodsActivity.this, "No foods found for: " + searchQuery, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    handleError("Failed to search foods: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Foods>> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                handleError("Search failed: " + t.getMessage());
+                Log.e("ListFoodsActivity", "Error searching foods", t);
+            }
+        });
+    }
+
+    private void setupRecyclerView(List<Foods> foodsList) {
+        if (foodsList != null && !foodsList.isEmpty()) {
+            adapterListFoods = new FoodListAdapter((ArrayList<Foods>) foodsList);
+            binding.foodListView.setLayoutManager(new GridLayoutManager(this, 2));
+            binding.foodListView.setAdapter(adapterListFoods);
+        } else {
+            Toast.makeText(this, "No foods available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Log.e("ListFoodsActivity", message);
+        setupRecyclerView(new ArrayList<>());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }

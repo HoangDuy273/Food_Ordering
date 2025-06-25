@@ -1,6 +1,8 @@
 package com.example.food_ordering.Domain;
 
-public class Time {
+import java.io.Serializable;
+
+public class Time implements Serializable {
     private int Id;
     private String Value;
 
@@ -9,7 +11,7 @@ public class Time {
 
     @Override
     public String toString() {
-        return Value ;
+        return Value;
     }
 
     public int getId() {

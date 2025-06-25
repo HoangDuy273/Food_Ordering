@@ -4,4 +4,14 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#F75564</color>
     <color name="blue_grey">#2E4058</color>
+    <color name="primary_red">#EF4444</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="dark_gray">#374151</color>
+    <color name="medium_gray">#6B7280</color>
+    <color name="purple_category">#A855F7</color>
+    <color name="blue_category">#3B82F6</color>
+    <color name="orange_category">#F97316</color>
+    <color name="green_category">#10B981</color>
+    <color name="pink_category">#EC4899</color>
+    <color name="yellow_star">#FCD34D</color>
 </resources>

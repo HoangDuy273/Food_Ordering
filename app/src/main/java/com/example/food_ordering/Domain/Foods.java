@@ -1,130 +1,103 @@
 package com.example.food_ordering.Domain;
 
-public class Foods {
-    private  int CategoryId;
-    private String Description;
+import java.io.Serializable;
 
-    private boolean BestFood;
-
+public class Foods implements Serializable {
     private int Id;
-
-    private double Price;
-
+    private boolean BestFood;
+    private int CategoryId;
+    private String Description;
     private String ImagePath;
-
-    private int PriceId;
-
+    private Location Location;
+    private Price Price;
     private double Star;
-
-    private int TimeId;
-
-    private int TimValue;
-
+    private Time Time;
     private String Title;
+    private String createdAt;
+    private String updatedAt;
 
-    private  int numberInCart;
+    public Foods() {}
 
-    public Foods() {
+    public Foods(int id, boolean bestFood, int categoryId, String description, String imagePath,
+                 Location location, Price price, double star, Time time, String title,
+                 String createdAt, String updatedAt) {
+        this.Id = id;
+        this.BestFood = bestFood;
+        this.CategoryId = categoryId;
+        this.Description = description;
+        this.ImagePath = imagePath;
+        this.Location = location;
+        this.Price = price;
+        this.Star = star;
+        this.Time = time;
+        this.Title = title;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    @Override
-    public String toString() {
-        return Title;
+    // Getters and Setters
+    public int getId() { return Id; }
+    public void setId(int id) { this.Id = id; }
+    public boolean isBestFood() { return BestFood; }
+    public void setBestFood(boolean bestFood) { this.BestFood = bestFood; }
+    public int getCategoryId() { return CategoryId; }
+    public void setCategoryId(int categoryId) { this.CategoryId = categoryId; }
+    public String getDescription() { return Description; }
+    public void setDescription(String description) { this.Description = description; }
+    public String getImagePath() { return ImagePath; }
+    public void setImagePath(String imagePath) { this.ImagePath = imagePath; }
+    public Location getLocation() { return Location; }
+    public void setLocation(Location location) { this.Location = location; }
+    public Price getPrice() { return Price; }
+    public void setPrice(Price price) { this.Price = price; }
+    public double getStar() { return Star; }
+    public void setStar(double star) { this.Star = star; }
+    public Time getTime() { return Time; }
+    public void setTime(Time time) { this.Time = time; }
+    public String getTitle() { return Title; }
+    public void setTitle(String title) { this.Title = title; }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    // Alias
+    public String getName() { return Title; }
+    public String getImageUrl() { return ImagePath; }
+    public String getCategory() { return String.valueOf(CategoryId); }
+    public void setPic(String imageUrl) { this.ImagePath = imageUrl; }
+
+    // Nested classes
+    public static class Location implements Serializable {
+        private int Id;
+        private String loc;
+
+        public int getId() { return Id; }
+        public void setId(int id) { this.Id = id; }
+        public String getLoc() { return loc; }
+        public void setLoc(String loc) { this.loc = loc; }
     }
 
-    public int getCategoryId() {
-        return CategoryId;
+    public static class Price implements Serializable {
+        private double Value;
+        private String Range;
+
+        public double getValue() { return Value; }
+        public void setValue(double value) { this.Value = value; }
+        public String getRange() { return Range; }
+        public void setRange(String range) { this.Range = range; }
     }
 
-    public void setCategoryId(int categoryId) {
-        CategoryId = categoryId;
-    }
+    public static class Time implements Serializable {
+        private int Id;
+        private String Value;
+        private int TimeValue;
 
-    public String getDescription() {
-        return Description;
-    }
-
-    public void setDescription(String description) {
-        Description = description;
-    }
-
-    public boolean isBestFood() {
-        return BestFood;
-    }
-
-    public void setBestFood(boolean bestFood) {
-        BestFood = bestFood;
-    }
-
-    public int getId() {
-        return Id;
-    }
-
-    public void setId(int id) {
-        Id = id;
-    }
-
-    public double getPrice() {
-        return Price;
-    }
-
-    public void setPrice(double price) {
-        Price = price;
-    }
-
-    public String getImagePath() {
-        return ImagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        ImagePath = imagePath;
-    }
-
-    public int getPriceId() {
-        return PriceId;
-    }
-
-    public void setPriceId(int priceId) {
-        PriceId = priceId;
-    }
-
-    public double getStar() {
-        return Star;
-    }
-
-    public void setStar(double star) {
-        Star = star;
-    }
-
-    public int getTimeId() {
-        return TimeId;
-    }
-
-    public void setTimeId(int timeId) {
-        TimeId = timeId;
-    }
-
-    public int getTimValue() {
-        return TimValue;
-    }
-
-    public void setTimValue(int timValue) {
-        TimValue = timValue;
-    }
-
-    public String getTitle() {
-        return Title;
-    }
-
-    public void setTitle(String title) {
-        Title = title;
-    }
-
-    public int getNumberInCart() {
-        return numberInCart;
-    }
-
-    public void setNumberInCart(int numberInCart) {
-        this.numberInCart = numberInCart;
+        public int getId() { return Id; }
+        public void setId(int id) { this.Id = id; }
+        public String getValue() { return Value; }
+        public void setValue(String value) { this.Value = value; }
+        public int getTimeValue() { return TimeValue; }
+        public void setTimeValue(int timeValue) { this.TimeValue = timeValue; }
     }
 }
