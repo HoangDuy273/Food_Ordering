@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.food_ordering.R;
@@ -41,20 +42,58 @@ public class CategoryAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_category, parent, false);
+            holder = new ViewHolder();
+            holder.categoryBackground = convertView.findViewById(R.id.categoryBackground);
+            holder.textCategoryIcon = convertView.findViewById(R.id.textCategoryIcon);
+            holder.imageCategoryIcon = convertView.findViewById(R.id.imageCategoryIcon);
+            holder.textCategoryName = convertView.findViewById(R.id.textCategoryName);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         Category category = categoryList.get(position);
 
-        FrameLayout categoryBackground = convertView.findViewById(R.id.categoryBackground);
-        TextView textCategoryIcon = convertView.findViewById(R.id.textCategoryIcon);
-        TextView textCategoryName = convertView.findViewById(R.id.textCategoryName);
+        // Set background color
+        holder.categoryBackground.setBackgroundColor(category.getBackgroundColor());
 
-        categoryBackground.setBackgroundColor(category.getBackgroundColor());
-        textCategoryIcon.setText(category.getIcon());
-        textCategoryName.setText(category.getName());
+        // Set category name - Đảm bảo luôn hiển thị
+        if (category.getName() != null && !category.getName().isEmpty()) {
+            holder.textCategoryName.setText(category.getName());
+            holder.textCategoryName.setVisibility(View.VISIBLE);
+        } else {
+            holder.textCategoryName.setText("Category");
+            holder.textCategoryName.setVisibility(View.VISIBLE);
+        }
+
+        // Xử lý hiển thị icon hoặc drawable
+        if (category.hasDrawable()) {
+            // Hiển thị drawable
+            holder.imageCategoryIcon.setImageResource(category.getDrawableRes());
+            holder.imageCategoryIcon.setVisibility(View.VISIBLE);
+            holder.textCategoryIcon.setVisibility(View.GONE);
+        } else if (category.hasIcon()) {
+            // Hiển thị emoji hoặc text icon
+            holder.textCategoryIcon.setText(category.getIcon());
+            holder.textCategoryIcon.setVisibility(View.VISIBLE);
+            holder.imageCategoryIcon.setVisibility(View.GONE);
+        } else {
+            // Không có icon nào - ẩn cả hai
+            holder.textCategoryIcon.setVisibility(View.GONE);
+            holder.imageCategoryIcon.setVisibility(View.GONE);
+        }
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        FrameLayout categoryBackground;
+        TextView textCategoryIcon;
+        ImageView imageCategoryIcon;
+        TextView textCategoryName;
     }
 }

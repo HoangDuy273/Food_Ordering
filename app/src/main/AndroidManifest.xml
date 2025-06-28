@@ -45,6 +45,16 @@
         <activity
             android:name=".Activity.BasicActivity"
             android:exported="false" />
+
+        <!-- CartActivity -->
+        <activity
+            android:name=".CartActivity"
+            android:exported="false" />
+
+        <!-- OrderTrackingActivity -->
+        <activity
+            android:name=".OrderTrackingActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

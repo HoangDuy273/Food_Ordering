@@ -33,9 +33,10 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/userNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="WhynotV1nhlee"
+            android:text="User"
             android:textColor="@color/dark_gray"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -43,6 +44,7 @@
       </LinearLayout>
 
       <ImageView
+          android:id="@+id/menuBtn"
           android:layout_width="40dp"
           android:layout_height="40dp"
           android:background="@drawable/category_background"
@@ -87,6 +89,7 @@
       </LinearLayout>
 
       <ImageView
+          android:id="@+id/cartBtn"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:background="@drawable/search_background"
@@ -105,11 +108,14 @@
         android:layout_marginBottom="24dp">
 
       <LinearLayout
+          android:id="@+id/locationLayout"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:orientation="horizontal"
-          android:gravity="center_vertical">
+          android:gravity="center_vertical"
+          android:clickable="true"
+          android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:layout_width="16dp"
@@ -119,20 +125,24 @@
             app:tint="@color/medium_gray" />
 
         <TextView
+            android:id="@+id/locationText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LA california"
+            android:text="LA California"
             android:textColor="@color/medium_gray"
             android:textSize="12sp" />
 
       </LinearLayout>
 
       <LinearLayout
+          android:id="@+id/timeLayout"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:orientation="horizontal"
-          android:gravity="center_vertical">
+          android:gravity="center_vertical"
+          android:clickable="true"
+          android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:layout_width="16dp"
@@ -142,6 +152,7 @@
             app:tint="@color/medium_gray" />
 
         <TextView
+            android:id="@+id/timeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0 - 10 min"
@@ -151,11 +162,14 @@
       </LinearLayout>
 
       <LinearLayout
+          android:id="@+id/priceLayout"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:orientation="horizontal"
-          android:gravity="center_vertical">
+          android:gravity="center_vertical"
+          android:clickable="true"
+          android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:layout_width="16dp"
@@ -165,6 +179,7 @@
             app:tint="@color/medium_gray" />
 
         <TextView
+            android:id="@+id/priceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1$ - 10$"
@@ -206,7 +221,7 @@
         android:id="@+id/recyclerViewFoods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-    android:layout_marginBottom="24dp" />
+        android:layout_marginBottom="24dp" />
 
     <!-- Choose Category Section -->
     <TextView
@@ -222,12 +237,11 @@
     <GridView
         android:id="@+id/gridViewCategories"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="240dp"
         android:numColumns="4"
         android:horizontalSpacing="16dp"
         android:verticalSpacing="16dp"
         android:stretchMode="columnWidth" />
 
   </LinearLayout>
-
 </ScrollView>

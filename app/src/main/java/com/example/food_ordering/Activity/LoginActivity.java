@@ -20,6 +20,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
+    private boolean toastShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,14 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.parseColor("#FFE4B5"));
 
         setVariable();
+    }
+
+    private void showToastOnce(String message) {
+        if (!toastShown) {
+            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+            toastShown = true;
+            binding.getRoot().postDelayed(() -> toastShown = false, 3000);
+        }
     }
 
     private void setVariable() {
@@ -42,26 +51,37 @@ public class LoginActivity extends AppCompatActivity {
                 RetrofitClient.getApiService().login(request).enqueue(new Callback<LoginResponse>() {
                     @Override
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             String token = response.body().getToken();
-                            new SharedPrefManager(LoginActivity.this).saveToken(token);
-                            Toast.makeText(LoginActivity.this, "Login success!", Toast.LENGTH_SHORT).show();
+                            LoginResponse.User user = response.body().getUser();
+                            if (user != null) {
+                                String name = user.getName();
+                                String email = user.getEmail();
 
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
+                                SharedPrefManager sharedPrefManager = new SharedPrefManager(LoginActivity.this);
+                                sharedPrefManager.saveToken(token);
+                                sharedPrefManager.saveUserInfo(name, email); // Lưu tên và email
+
+                                showToastOnce("Login success!");
+
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            } else {
+                                showToastOnce("Login failed: User data is null");
+                            }
                         } else {
-                            Toast.makeText(LoginActivity.this, "Login failed: " + response.code(), Toast.LENGTH_SHORT).show();
+                            showToastOnce("Login failed: " + (response.body() != null ? response.body().getMessage() : response.code()));
                         }
                     }
 
                     @Override
                     public void onFailure(Call<LoginResponse> call, Throwable t) {
-                        Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        showToastOnce("Network error: " + t.getMessage());
                     }
                 });
 
             } else {
-                Toast.makeText(LoginActivity.this, "Please fill in both fields", Toast.LENGTH_SHORT).show();
+                showToastOnce("Please fill in both fields");
             }
         });
 

@@ -14,4 +14,5 @@
     <color name="green_category">#10B981</color>
     <color name="pink_category">#EC4899</color>
     <color name="yellow_star">#FCD34D</color>
+    <color name="grey">#F5F5F5</color>
 </resources>

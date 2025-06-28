@@ -1,0 +1,328 @@
+package com.example.food_ordering;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.food_ordering.Adapter.CartAdapter;
+import com.example.food_ordering.databinding.ActivityCartBinding;
+import com.example.food_ordering.model.CartResponse;
+import com.example.food_ordering.model.OrderRequest;
+import com.example.food_ordering.model.OrderResponse;
+import com.example.food_ordering.network.ApiService;
+import com.example.food_ordering.network.RetrofitClient;
+import com.example.food_ordering.util.SharedPrefManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class CartActivity extends AppCompatActivity {
+    private static final String TAG = "CartActivity";
+    private ActivityCartBinding binding;
+    private CartAdapter cartAdapter;
+    private List<CartItem> cartItems;
+    private ApiService apiService;
+    private SharedPrefManager sharedPrefManager;
+
+    // Define interfaces for CartAdapter
+    public interface OnQuantityChangedListener {
+        void onQuantityChanged();
+    }
+
+    public interface OnRemoveItemListener {
+        void onRemoveItem(CartItem item, int position);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityCartBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        apiService = RetrofitClient.getApiService();
+        sharedPrefManager = new SharedPrefManager(this);
+        cartItems = new ArrayList<>();
+
+        // Initialize RecyclerView
+        initCartRecyclerView();
+
+        // Fetch cart items from server
+        fetchCartItems();
+
+        // Handle Back button
+        binding.backBtn.setOnClickListener(v -> finish());
+
+        // Handle Apply Coupon button
+        binding.buttonApplyCoupon.setOnClickListener(v -> {
+            String couponCode = binding.editTextText.getText().toString().trim();
+            if (!couponCode.isEmpty()) {
+                Toast.makeText(this, "Đã áp dụng mã: " + couponCode, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Vui lòng nhập mã giảm giá", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Handle Place Order button
+        binding.btnPlaceOrder.setOnClickListener(v -> {
+            if (cartItems.isEmpty()) {
+                Toast.makeText(this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            placeOrder();
+        });
+    }
+
+    private void fetchCartItems() {
+        String token = sharedPrefManager.getToken();
+        if (token == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập để xem giỏ hàng!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d(TAG, "Fetching cart items with token: " + token);
+        Call<CartResponse> call = apiService.getCart("Bearer " + token);
+        call.enqueue(new Callback<CartResponse>() {
+            @Override
+            public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    cartItems.clear();
+                    for (ApiService.CartItemResponse item : response.body().getData()) {
+                        ApiService.CartItemResponse.Food food = item.getFood();
+                        cartItems.add(new CartItem(
+                                item.getId(),
+                                food.getTitle(),
+                                food.getPrice().getValue(),
+                                item.getQuantity(),
+                                food.getImage()
+                        ));
+                    }
+                    Log.d(TAG, "Cart items received: " + cartItems.size());
+                    cartAdapter.notifyDataSetChanged();
+                    updateOrderSummary();
+                } else {
+                    Log.e(TAG, "API Error: " + response.code() + " - " + response.message());
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Toast.makeText(CartActivity.this, "Lấy giỏ hàng thất bại: " + errorBody, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(CartActivity.this, "Lấy giỏ hàng thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CartResponse> call, Throwable t) {
+                Log.e(TAG, "API Failure: " + t.getMessage());
+                Toast.makeText(CartActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initCartRecyclerView() {
+        binding.recyclerViewCart.setLayoutManager(new LinearLayoutManager(this));
+        cartAdapter = new CartAdapter(cartItems, this::updateOrderSummary, this::removeCartItem);
+        binding.recyclerViewCart.setAdapter(cartAdapter);
+    }
+
+    private void updateOrderSummary() {
+        double subtotal = 0;
+        for (CartItem item : cartItems) {
+            subtotal += item.getPrice() * item.getQuantity();
+        }
+        double delivery = 10.00;
+        double tax = 1.00;
+        double total = subtotal + delivery + tax;
+
+        binding.tvSubtotal.setText(String.format("$%.2f", subtotal));
+        binding.tvDelivery.setText(String.format("$%.2f", delivery));
+        binding.tvTax.setText(String.format("$%.2f", tax));
+        binding.tvTotal.setText(String.format("$%.2f", total));
+    }
+
+    private void updateCartItemOnServer(CartItem item) {
+        String token = sharedPrefManager.getToken();
+        if (token == null) return;
+
+        ApiService apiService = RetrofitClient.getApiService();
+        ApiService.CartItemRequest request = new ApiService.CartItemRequest(item.getId(), item.getQuantity());
+        Call<ApiService.CartItemResponse> call = apiService.updateCartItem("Bearer " + token, item.getId(), request);
+        call.enqueue(new Callback<ApiService.CartItemResponse>() {
+            @Override
+            public void onResponse(Call<ApiService.CartItemResponse> call, Response<ApiService.CartItemResponse> response) {
+                if (!response.isSuccessful()) {
+                    Log.e(TAG, "Failed to update cart item: " + response.code());
+                    Toast.makeText(CartActivity.this, "Cập nhật giỏ hàng thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiService.CartItemResponse> call, Throwable t) {
+                Log.e(TAG, "Error updating cart item: " + t.getMessage());
+                Toast.makeText(CartActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void removeCartItem(CartItem item, int position) {
+        String token = sharedPrefManager.getToken();
+        if (token == null) return;
+
+        Call<Void> call = apiService.removeFromCart("Bearer " + token, item.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    cartItems.remove(position);
+                    cartAdapter.notifyItemRemoved(position);
+                    updateOrderSummary();
+                    Toast.makeText(CartActivity.this, "Đã xóa sản phẩm khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "Failed to remove cart item: " + response.code());
+                    Toast.makeText(CartActivity.this, "Xóa sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error removing cart item: " + t.getMessage());
+                Toast.makeText(CartActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void placeOrder() {
+        String token = sharedPrefManager.getToken();
+        if (token == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập để đặt hàng!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Giả định lấy thông tin giao hàng từ người dùng (có thể thêm EditText trong giao diện sau)
+        String deliveryAddress = "123 Main St, LA California"; // Giá trị mặc định
+        String phoneNumber = "1234567890"; // Giá trị mặc định
+        String notes = binding.editTextText.getText().toString().trim(); // Sử dụng trường coupon làm notes tạm thời
+        String paymentMethod = "Cash on Delivery"; // Giá trị mặc định
+
+        // Chuẩn bị dữ liệu để gửi lên server
+        List<OrderRequest.OrderItemRequest> orderItems = new ArrayList<>();
+        for (CartItem item : cartItems) {
+            orderItems.add(new OrderRequest.OrderItemRequest(item.getId(), item.getQuantity(), item.getPrice()));
+        }
+
+        OrderRequest orderRequest = new OrderRequest(orderItems, deliveryAddress, phoneNumber);
+        orderRequest.setNotes(notes);
+        orderRequest.setPaymentMethod(paymentMethod);
+
+        Call<OrderResponse> call = apiService.placeOrder("Bearer " + token, orderRequest);
+        call.enqueue(new Callback<OrderResponse>() {
+            @Override
+            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(CartActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
+                    String orderId = response.body().getData().getOrderId(); // Lấy orderId từ response
+                    Intent intent = new Intent(CartActivity.this, com.example.food_ordering.OrderTrackingActivity.class);
+                    intent.putExtra("orderId", orderId);
+                    startActivity(intent);
+                    finish(); // Đóng CartActivity sau khi chuyển
+                } else {
+                    Log.e(TAG, "API Error: " + response.code() + " - " + response.message());
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Toast.makeText(CartActivity.this, "Đặt hàng thất bại: " + errorBody, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(CartActivity.this, "Đặt hàng thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderResponse> call, Throwable t) {
+                Log.e(TAG, "API Failure: " + t.getMessage());
+                Toast.makeText(CartActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static class CartItem implements android.os.Parcelable {
+        private String id;
+        private String name;
+        private double price;
+        private int quantity;
+        private String imageUrl;
+
+        public CartItem(String id, String name, double price, int quantity, String imageUrl) {
+            this.id = id;
+            this.name = name;
+            this.price = price;
+            this.quantity = quantity;
+            this.imageUrl = imageUrl;
+        }
+
+        protected CartItem(android.os.Parcel in) {
+            id = in.readString();
+            name = in.readString();
+            price = in.readDouble();
+            quantity = in.readInt();
+            imageUrl = in.readString();
+        }
+
+        public static final Creator<CartItem> CREATOR = new Creator<CartItem>() {
+            @Override
+            public CartItem createFromParcel(android.os.Parcel in) {
+                return new CartItem(in);
+            }
+
+            @Override
+            public CartItem[] newArray(int size) {
+                return new CartItem[size];
+            }
+        };
+
+        @Override
+        public void writeToParcel(android.os.Parcel dest, int flags) {
+            dest.writeString(id);
+            dest.writeString(name);
+            dest.writeDouble(price);
+            dest.writeInt(quantity);
+            dest.writeString(imageUrl);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+
+        public String getImageUrl() {
+            return imageUrl;
+        }
+    }
+}

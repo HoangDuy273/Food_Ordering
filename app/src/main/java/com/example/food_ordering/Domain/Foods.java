@@ -1,24 +1,38 @@
 package com.example.food_ordering.Domain;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class Foods implements Serializable {
-    private int Id;
+    @SerializedName("_id")
+    private String Id;
+    @SerializedName("BestFood")
     private boolean BestFood;
+    @SerializedName("CategoryId")
     private int CategoryId;
+    @SerializedName("Description")
     private String Description;
+    @SerializedName("ImagePath")
     private String ImagePath;
+    @SerializedName("Location")
     private Location Location;
+    @SerializedName("Price")
     private Price Price;
+    @SerializedName("Star")
     private double Star;
+    @SerializedName("Time")
     private Time Time;
+    @SerializedName("Title")
     private String Title;
+    @SerializedName("createdAt")
     private String createdAt;
+    @SerializedName("updatedAt")
     private String updatedAt;
 
     public Foods() {}
 
-    public Foods(int id, boolean bestFood, int categoryId, String description, String imagePath,
+    public Foods(String id, boolean bestFood, int categoryId, String description, String imagePath,
                  Location location, Price price, double star, Time time, String title,
                  String createdAt, String updatedAt) {
         this.Id = id;
@@ -36,8 +50,8 @@ public class Foods implements Serializable {
     }
 
     // Getters and Setters
-    public int getId() { return Id; }
-    public void setId(int id) { this.Id = id; }
+    public String getId() { return Id; }
+    public void setId(String id) { this.Id = id; }
     public boolean isBestFood() { return BestFood; }
     public void setBestFood(boolean bestFood) { this.BestFood = bestFood; }
     public int getCategoryId() { return CategoryId; }
@@ -69,17 +83,17 @@ public class Foods implements Serializable {
 
     // Nested classes
     public static class Location implements Serializable {
-        private int Id;
+        @SerializedName("loc")
         private String loc;
 
-        public int getId() { return Id; }
-        public void setId(int id) { this.Id = id; }
         public String getLoc() { return loc; }
         public void setLoc(String loc) { this.loc = loc; }
     }
 
     public static class Price implements Serializable {
+        @SerializedName("Value")
         private double Value;
+        @SerializedName("Range")
         private String Range;
 
         public double getValue() { return Value; }
@@ -89,15 +103,10 @@ public class Foods implements Serializable {
     }
 
     public static class Time implements Serializable {
-        private int Id;
+        @SerializedName("Value")
         private String Value;
-        private int TimeValue;
 
-        public int getId() { return Id; }
-        public void setId(int id) { this.Id = id; }
         public String getValue() { return Value; }
         public void setValue(String value) { this.Value = value; }
-        public int getTimeValue() { return TimeValue; }
-        public void setTimeValue(int timeValue) { this.TimeValue = timeValue; }
     }
 }

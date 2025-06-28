@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="48dp"
-    tools:context=".Activity.LoginActivity">
+    tools:context=".Activity.SignupActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -54,10 +54,26 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/userEdt"
+                android:id="@+id/nameEdt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="32dp"
+                android:hint="Full Name"
+                android:textAlignment="center"
+                android:textColorHint="@color/blue_grey"
+                android:textSize="16sp"
+                android:ems="10"
+                android:background="@drawable/edittext_background"
+                android:inputType="textPersonName"
+                />
+
+            <EditText
+                android:id="@+id/userEdt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginStart="32dp"
                 android:hint="Email address"
@@ -66,7 +82,7 @@
                 android:textSize="16sp"
                 android:ems="10"
                 android:background="@drawable/edittext_background"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 />
 
             <EditText
@@ -92,6 +108,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="20dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:background="@drawable/red_button_backgound"
                 android:text="Signup"
                 android:textColor="@color/white"
@@ -109,7 +127,7 @@
                 android:text="Are you a member? Login"
                 android:clickable="true"
                 android:focusable="true" />
-            />
+
         </LinearLayout>
     </ScrollView>
 

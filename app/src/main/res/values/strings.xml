@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Food_Ordering</string>
+    <string name="back">Back</string>
+    <string name="food_image">Food Image</string>
+    <string name="decrease_quantity">Decrease Quantity</string>
+    <string name="increase_quantity">Increase Quantity</string>
 </resources>

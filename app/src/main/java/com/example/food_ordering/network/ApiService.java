@@ -1,11 +1,11 @@
 package com.example.food_ordering.network;
 
 import com.example.food_ordering.Domain.Foods;
-import com.example.food_ordering.Domain.Location;
-import com.example.food_ordering.Domain.Price;
-import com.example.food_ordering.Domain.Time;
+import com.example.food_ordering.model.CartResponse;
 import com.example.food_ordering.model.LoginRequest;
 import com.example.food_ordering.model.LoginResponse;
+import com.example.food_ordering.model.OrderRequest;
+import com.example.food_ordering.model.OrderResponse;
 import com.example.food_ordering.model.RegisterRequest;
 import com.example.food_ordering.model.RegisterResponse;
 
@@ -13,14 +13,15 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
-
     // Authentication endpoints
     @POST("/api/auth/register")
     Call<RegisterResponse> register(@Body RegisterRequest request);
@@ -44,15 +45,191 @@ public interface ApiService {
     @GET("/api/foods/search")
     Call<List<Foods>> searchFoods(@Query("query") String searchQuery);
 
-    // Location endpoints
-    @GET("/api/locations")
-    Call<List<Location>> getLocations();
+    // Cart endpoints
+    @GET("/api/cart")
+    Call<CartResponse> getCart(@Header("Authorization") String token);
 
-    // Time slots endpoints
-    @GET("/api/times")
-    Call<List<Time>> getTimes();
+    @POST("/api/cart")
+    Call<CartItemResponse> addToCart(@Header("Authorization") String token, @Body CartItemRequest request);
 
-    // Price range endpoints
-    @GET("/api/prices")
-    Call<List<Price>> getPrices();
+    @PUT("/api/cart/{id}")
+    Call<CartItemResponse> updateCartItem(@Header("Authorization") String token, @Path("id") String cartId, @Body CartItemRequest request);
+
+    @DELETE("/api/cart/{id}")
+    Call<Void> removeFromCart(@Header("Authorization") String token, @Path("id") String cartId);
+
+    // Order endpoints
+    @POST("/api/orders")
+    Call<OrderResponse> placeOrder(@Header("Authorization") String token, @Body OrderRequest request);
+
+    @GET("/api/orders")
+    Call<List<OrderResponse>> getOrders(@Header("Authorization") String token);
+
+    // Lớp CartItemRequest để gửi dữ liệu lên backend
+    class CartItemRequest {
+        private String foodId;
+        private int quantity;
+
+        public CartItemRequest(String foodId, int quantity) {
+            this.foodId = foodId;
+            this.quantity = quantity;
+        }
+
+        public String getFoodId() {
+            return foodId;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+    }
+
+    // Lớp CartItemResponse để nhận dữ liệu từ backend
+    class CartItemResponse {
+        @com.google.gson.annotations.SerializedName("_id")
+        private String id;
+        private Food food;
+        private int quantity;
+        private String user;
+        private String createdAt;
+        private String updatedAt;
+
+        public String getId() {
+            return id;
+        }
+
+        public Food getFood() {
+            return food;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public String getCreatedAt() {
+            return createdAt;
+        }
+
+        public String getUpdatedAt() {
+            return updatedAt;
+        }
+
+        public static class Food {
+            @com.google.gson.annotations.SerializedName("_id")
+            private String id;
+            @com.google.gson.annotations.SerializedName("Title")
+            private String title;
+            @com.google.gson.annotations.SerializedName("Price")
+            private Price price;
+            @com.google.gson.annotations.SerializedName("ImagePath")
+            private String image;
+            @com.google.gson.annotations.SerializedName("BestFood")
+            private boolean bestFood;
+            @com.google.gson.annotations.SerializedName("CategoryId")
+            private int categoryId;
+            @com.google.gson.annotations.SerializedName("Description")
+            private String description;
+            @com.google.gson.annotations.SerializedName("Star")
+            private double star;
+            @com.google.gson.annotations.SerializedName("Time")
+            private Time time;
+            @com.google.gson.annotations.SerializedName("Location")
+            private Location location;
+
+            public String getId() {
+                return id;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public Price getPrice() {
+                return price;
+            }
+
+            public String getImage() {
+                return image;
+            }
+
+            public boolean isBestFood() {
+                return bestFood;
+            }
+
+            public int getCategoryId() {
+                return categoryId;
+            }
+
+            public String getDescription() {
+                return description;
+            }
+
+            public double getStar() {
+                return star;
+            }
+
+            public Time getTime() {
+                return time;
+            }
+
+            public Location getLocation() {
+                return location;
+            }
+
+            public static class Price {
+                @com.google.gson.annotations.SerializedName("Value")
+                private double value;
+                @com.google.gson.annotations.SerializedName("Range")
+                private String range;
+
+                public double getValue() {
+                    return value;
+                }
+
+                public String getRange() {
+                    return range;
+                }
+            }
+
+            public static class Time {
+                @com.google.gson.annotations.SerializedName("Id")
+                private int id;
+                @com.google.gson.annotations.SerializedName("Value")
+                private String value;
+                @com.google.gson.annotations.SerializedName("TimeValue")
+                private int timeValue;
+
+                public int getId() {
+                    return id;
+                }
+
+                public String getValue() {
+                    return value;
+                }
+
+                public int getTimeValue() {
+                    return timeValue;
+                }
+            }
+
+            public static class Location {
+                @com.google.gson.annotations.SerializedName("Id")
+                private int id;
+                @com.google.gson.annotations.SerializedName("loc")
+                private String loc;
+
+                public int getId() {
+                    return id;
+                }
+
+                public String getLoc() {
+                    return loc;
+                }
+            }
+        }
+    }
 }
