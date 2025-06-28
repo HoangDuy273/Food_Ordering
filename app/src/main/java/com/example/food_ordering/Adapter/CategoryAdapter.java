@@ -1,6 +1,8 @@
 package com.example.food_ordering.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.food_ordering.Activity.ListFoodsActivity;
 import com.example.food_ordering.R;
 import com.example.food_ordering.Domain.Category;
 
@@ -86,6 +89,18 @@ public class CategoryAdapter extends BaseAdapter {
             holder.textCategoryIcon.setVisibility(View.GONE);
             holder.imageCategoryIcon.setVisibility(View.GONE);
         }
+
+        // Thêm sự kiện nhấn vào danh mục với log debug
+        convertView.setOnClickListener(v -> {
+            int categoryId = category.getId();
+            String categoryName = category.getName();
+            Log.d("CategoryAdapter", "Clicked Category - Id: " + categoryId + ", Name: " + categoryName);
+            Intent intent = new Intent(context, ListFoodsActivity.class);
+            intent.putExtra("CategoryId", categoryId);
+            intent.putExtra("CategoryName", categoryName);
+            intent.putExtra("isSearch", false);
+            context.startActivity(intent);
+        });
 
         return convertView;
     }

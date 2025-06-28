@@ -1,7 +1,6 @@
 package com.example.food_ordering.Activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +16,7 @@ import com.example.food_ordering.model.OrderResponse;
 import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
 import com.example.food_ordering.Adapter.OrderAdapter;
+import com.example.food_ordering.util.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ public class OrderListActivity extends AppCompatActivity {
     private static final String TAG = "OrderListActivity";
     private ActivityOrderListBinding binding;
     private ApiService apiService;
+    private SharedPrefManager sharedPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +44,12 @@ public class OrderListActivity extends AppCompatActivity {
         }
 
         apiService = RetrofitClient.getApiService();
+        sharedPrefManager = new SharedPrefManager(this);
         initOrderList();
     }
 
     private void initOrderList() {
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String token = prefs.getString("auth_token", null);
-
-        if (token == null) {
+        if (!sharedPrefManager.isLoggedIn()) {
             Log.e(TAG, "Không tìm thấy token xác thực");
             Toast.makeText(this, "Vui lòng đăng nhập để xem đơn hàng", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(OrderListActivity.this, IntroActivity.class);
@@ -59,6 +58,7 @@ public class OrderListActivity extends AppCompatActivity {
             return;
         }
 
+        String token = sharedPrefManager.getToken();
         apiService.getOrders("Bearer " + token).enqueue(new Callback<List<OrderResponse>>() {
             @Override
             public void onResponse(Call<List<OrderResponse>> call, Response<List<OrderResponse>> response) {

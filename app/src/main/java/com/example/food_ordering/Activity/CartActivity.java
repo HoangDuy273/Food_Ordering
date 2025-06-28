@@ -3,12 +3,13 @@ package com.example.food_ordering;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.food_ordering.Activity.IntroActivity;
+import com.example.food_ordering.Activity.MainActivity;
 import com.example.food_ordering.Adapter.CartAdapter;
 import com.example.food_ordering.databinding.ActivityCartBinding;
 import com.example.food_ordering.model.CartResponse;
@@ -20,6 +21,7 @@ import com.example.food_ordering.util.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,6 +87,10 @@ public class CartActivity extends AppCompatActivity {
         String token = sharedPrefManager.getToken();
         if (token == null) {
             Toast.makeText(this, "Vui lòng đăng nhập để xem giỏ hàng!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CartActivity.this, IntroActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
             return;
         }
 
@@ -199,14 +205,73 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
+    private void clearCart(Runnable onComplete) {
+        String token = sharedPrefManager.getToken();
+        if (token == null) {
+            Log.e(TAG, "No token found for clearing cart");
+            Toast.makeText(this, "Vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CartActivity.this, IntroActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        if (cartItems.isEmpty()) {
+            Log.d(TAG, "Cart is already empty");
+            onComplete.run();
+            return;
+        }
+
+        AtomicInteger pendingRequests = new AtomicInteger(cartItems.size());
+        List<CartItem> itemsToRemove = new ArrayList<>(cartItems);
+
+        for (CartItem item : itemsToRemove) {
+            Call<Void> call = apiService.removeFromCart("Bearer " + token, item.getId());
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "Successfully removed cart item: " + item.getId());
+                    } else {
+                        Log.e(TAG, "Failed to remove cart item: " + item.getId() + ", code: " + response.code());
+                    }
+                    if (pendingRequests.decrementAndGet() == 0) {
+                        cartItems.clear();
+                        cartAdapter.notifyDataSetChanged();
+                        updateOrderSummary();
+                        Log.d(TAG, "All cart items cleared");
+                        onComplete.run();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e(TAG, "Error removing cart item: " + item.getId() + ", error: " + t.getMessage());
+                    if (pendingRequests.decrementAndGet() == 0) {
+                        cartItems.clear();
+                        cartAdapter.notifyDataSetChanged();
+                        updateOrderSummary();
+                        Log.d(TAG, "All cart items cleared (with some failures)");
+                        onComplete.run();
+                    }
+                }
+            });
+        }
+    }
+
     private void placeOrder() {
         String token = sharedPrefManager.getToken();
         if (token == null) {
             Toast.makeText(this, "Vui lòng đăng nhập để đặt hàng!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CartActivity.this, IntroActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
             return;
         }
 
-        // Giả định lấy thông tin giao hàng từ người dùng (có thể thêm EditText trong giao diện sau)
+        // Giả định lấy thông tin giao hàng từ người dùng
         String deliveryAddress = "123 Main St, LA California"; // Giá trị mặc định
         String phoneNumber = "1234567890"; // Giá trị mặc định
         String notes = binding.editTextText.getText().toString().trim(); // Sử dụng trường coupon làm notes tạm thời
@@ -228,11 +293,21 @@ public class CartActivity extends AppCompatActivity {
             public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(CartActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-                    String orderId = response.body().getData().getOrderId(); // Lấy orderId từ response
-                    Intent intent = new Intent(CartActivity.this, com.example.food_ordering.OrderTrackingActivity.class);
-                    intent.putExtra("orderId", orderId);
-                    startActivity(intent);
-                    finish(); // Đóng CartActivity sau khi chuyển
+                    String orderId = response.body().getData().getOrderId();
+
+                    // Xóa giỏ hàng trước khi điều hướng
+                    clearCart(() -> {
+                        // Chuyển hướng về MainActivity
+                        Intent intent = new Intent(CartActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
+
+                        // Chuyển hướng tới OrderTrackingActivity
+                        Intent trackingIntent = new Intent(CartActivity.this, OrderTrackingActivity.class);
+                        trackingIntent.putExtra("orderId", orderId);
+                        startActivity(trackingIntent);
+                        finish(); // Đóng CartActivity
+                    });
                 } else {
                     Log.e(TAG, "API Error: " + response.code() + " - " + response.message());
                     try {

@@ -4,4 +4,5 @@
     <string name="food_image">Food Image</string>
     <string name="decrease_quantity">Decrease Quantity</string>
     <string name="increase_quantity">Increase Quantity</string>
+    <string name="search_hint">Tìm kiếm món ăn...</string>
 </resources>

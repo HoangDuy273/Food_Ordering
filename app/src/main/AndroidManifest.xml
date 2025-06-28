@@ -45,6 +45,9 @@
         <activity
             android:name=".Activity.BasicActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activity.OrderListActivity"
+            android:exported="false" />
 
         <!-- CartActivity -->
         <activity

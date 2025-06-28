@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +59,15 @@ public class MainActivity extends AppCompatActivity {
         apiService = RetrofitClient.getApiService();
         sharedPrefManager = new SharedPrefManager(this);
 
+        // Kiểm tra token ngay khi vào MainActivity
+        if (!sharedPrefManager.isLoggedIn()) {
+            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, IntroActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         // Hiển thị tên người dùng từ SharedPrefManager
         TextView userNameTextView = findViewById(R.id.userNameTextView);
         String userName = sharedPrefManager.getUserName();
@@ -74,13 +84,47 @@ public class MainActivity extends AppCompatActivity {
         ImageView menuBtn = findViewById(R.id.menuBtn);
         menuBtn.setOnClickListener(v -> showPopupMenu(v));
 
+        // Khởi tạo SearchView và đặt listener
+        SearchView searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (!query.trim().isEmpty()) {
+                    Intent intent = new Intent(MainActivity.this, ListFoodsActivity.class);
+                    intent.putExtra("isSearch", true);
+                    intent.putExtra("searchQuery", query.trim());
+                    startActivity(intent);
+                    searchView.clearFocus();
+                } else {
+                    Toast.makeText(MainActivity.this, "Vui lòng nhập tên món ăn", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         // Khởi tạo và đặt listener cho Location, Time, Price
         setupLocationFilter();
         setupTimeFilter();
         setupPriceFilter();
-
+        setupViewAllButton();
         initBestFoods();
         initCategories();
+    }
+
+    private void setupViewAllButton() {
+        TextView viewAllBtn = findViewById(R.id.viewAllBtn);
+        viewAllBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ListFoodsActivity.class);
+            intent.putExtra("CategoryId", 0); // 0 để hiển thị tất cả món ăn
+            intent.putExtra("CategoryName", "Tất cả món ăn");
+            intent.putExtra("isSearch", false);
+            startActivity(intent);
+        });
     }
 
     private void showPopupMenu(View view) {
@@ -96,13 +140,19 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Profile clicked", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if (item.getTitle().equals("Order")) {
+                    if (!sharedPrefManager.isLoggedIn()) {
+                        Toast.makeText(MainActivity.this, "Vui lòng đăng nhập để xem đơn hàng", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, IntroActivity.class);
+                        startActivity(intent);
+                        return true;
+                    }
                     Intent intent = new Intent(MainActivity.this, OrderListActivity.class);
                     startActivity(intent);
                     return true;
                 } else if (item.getTitle().equals("Logout")) {
                     // Xóa thông tin người dùng khi đăng xuất
                     sharedPrefManager.clearToken();
-
+                    Toast.makeText(MainActivity.this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, IntroActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -235,23 +285,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void initCategories() {
         ArrayList<Category> categories = new ArrayList<>();
-        categories.add(new Category(1, "Pizza", "", R.drawable.btn_1,
+        categories.add(new Category(0, "Pizza", "", R.drawable.btn_1,
                 android.graphics.Color.parseColor("#CC66FF")));
-        categories.add(new Category(2, "Burger", "", R.drawable.btn_2,
+        categories.add(new Category(1, "Burger", "", R.drawable.btn_2,
                 android.graphics.Color.parseColor("#0099CC")));
-        categories.add(new Category(3, "Chicken", "", R.drawable.btn_3,
+        categories.add(new Category(2, "Chicken", "", R.drawable.btn_3,
                 android.graphics.Color.parseColor("#FF6666")));
-        categories.add(new Category(4, "Sushi", "", R.drawable.btn_4,
+        categories.add(new Category(3, "Sushi", "", R.drawable.btn_4,
                 android.graphics.Color.parseColor("#33FF33")));
-        categories.add(new Category(5, "Meat", "", R.drawable.btn_5,
+        categories.add(new Category(4, "Meat", "", R.drawable.btn_5,
                 android.graphics.Color.parseColor("#FF99FF")));
-        categories.add(new Category(6, "Hotdog", "", R.drawable.btn_6,
+        categories.add(new Category(5, "Hotdog", "", R.drawable.btn_6,
                 android.graphics.Color.parseColor("#33CC33")));
-        categories.add(new Category(7, "Drink", "", R.drawable.btn_7,
+        categories.add(new Category(6, "Drink", "", R.drawable.btn_7,
                 android.graphics.Color.parseColor("#FF66FF")));
-        categories.add(new Category(8, "More", "", R.drawable.btn_8,
+        categories.add(new Category(7, "More", "", R.drawable.btn_8,
                 android.graphics.Color.parseColor("#6699FF")));
-
         CategoryAdapter adapter = new CategoryAdapter(this, categories);
         binding.gridViewCategories.setAdapter(adapter);
     }
