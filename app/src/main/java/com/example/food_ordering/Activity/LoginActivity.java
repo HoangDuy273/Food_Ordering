@@ -11,7 +11,7 @@ import com.example.food_ordering.databinding.ActivityLoginBinding;
 import com.example.food_ordering.model.LoginRequest;
 import com.example.food_ordering.model.LoginResponse;
 import com.example.food_ordering.network.RetrofitClient;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                                 String name = user.getName();
                                 String email = user.getEmail();
 
-                                SharedPrefManager sharedPrefManager = new SharedPrefManager(LoginActivity.this);
+                                SharedPrefManager sharedPrefManager = new SharedPrefManager(getApplicationContext());
                                 sharedPrefManager.saveToken(token);
                                 sharedPrefManager.saveUserInfo(name, email); // Lưu tên và email
 

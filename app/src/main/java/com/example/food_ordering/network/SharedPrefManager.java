@@ -1,4 +1,4 @@
-package com.example.food_ordering.util;
+package com.example.food_ordering.network;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -52,6 +52,7 @@ public class SharedPrefManager {
 
     // Kiểm tra user đã login chưa
     public boolean isLoggedIn() {
-        return getToken() != null;
+        String token = getToken();
+        return token != null && !token.isEmpty();
     }
 }

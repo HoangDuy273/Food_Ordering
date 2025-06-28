@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.food_ordering.Adapter.BestFoodsAdapter;
 import com.example.food_ordering.Adapter.CategoryAdapter;
-import com.example.food_ordering.CartActivity;
 import com.example.food_ordering.Domain.Category;
 import com.example.food_ordering.Domain.Foods;
 import com.example.food_ordering.R;

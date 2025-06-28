@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.food_ordering.CartActivity;
+import com.example.food_ordering.Activity.CartActivity;
 import com.example.food_ordering.R;
 
 import java.util.List;
