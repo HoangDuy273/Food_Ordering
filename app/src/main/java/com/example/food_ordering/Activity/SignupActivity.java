@@ -9,7 +9,7 @@ import com.example.food_ordering.databinding.ActivitySignupBinding;
 import com.example.food_ordering.model.RegisterRequest;
 import com.example.food_ordering.model.RegisterResponse;
 import com.example.food_ordering.network.RetrofitClient;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
