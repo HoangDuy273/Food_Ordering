@@ -9,14 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.food_ordering.OrderTrackingActivity;
+import com.example.food_ordering.Activity.OrderTrackingActivity;
 import com.example.food_ordering.R;
 import com.example.food_ordering.databinding.ActivityOrderListBinding;
 import com.example.food_ordering.model.OrderResponse;
 import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
 import com.example.food_ordering.Adapter.OrderAdapter;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -13,7 +13,7 @@ import com.example.food_ordering.R;
 import com.example.food_ordering.databinding.ActivityDetailBinding;
 import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;

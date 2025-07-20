@@ -28,7 +28,7 @@ import com.example.food_ordering.R;
 import com.example.food_ordering.databinding.ActivityMainBinding;
 import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.List;

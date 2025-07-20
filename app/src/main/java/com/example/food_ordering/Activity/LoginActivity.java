@@ -11,7 +11,7 @@ import com.example.food_ordering.databinding.ActivityLoginBinding;
 import com.example.food_ordering.model.LoginRequest;
 import com.example.food_ordering.model.LoginResponse;
 import com.example.food_ordering.network.RetrofitClient;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;

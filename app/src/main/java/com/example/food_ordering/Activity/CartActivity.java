@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.food_ordering.Activity.IntroActivity;
 import com.example.food_ordering.Activity.MainActivity;
+import com.example.food_ordering.Activity.OrderSuccessActivity;
 import com.example.food_ordering.Adapter.CartAdapter;
 import com.example.food_ordering.databinding.ActivityCartBinding;
 import com.example.food_ordering.model.CartResponse;
@@ -17,7 +18,7 @@ import com.example.food_ordering.model.OrderRequest;
 import com.example.food_ordering.model.OrderResponse;
 import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
-import com.example.food_ordering.util.SharedPrefManager;
+import com.example.food_ordering.network.SharedPrefManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -297,16 +298,11 @@ public class CartActivity extends AppCompatActivity {
 
                     // Xóa giỏ hàng trước khi điều hướng
                     clearCart(() -> {
-                        // Chuyển hướng về MainActivity
-                        Intent intent = new Intent(CartActivity.this, MainActivity.class);
+                        Intent intent = new Intent(CartActivity.this, OrderSuccessActivity.class);
+                        intent.putExtra("orderId", orderId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
-
-                        // Chuyển hướng tới OrderTrackingActivity
-                        Intent trackingIntent = new Intent(CartActivity.this, OrderTrackingActivity.class);
-                        trackingIntent.putExtra("orderId", orderId);
-                        startActivity(trackingIntent);
-                        finish(); // Đóng CartActivity
+                        finish();
                     });
                 } else {
                     Log.e(TAG, "API Error: " + response.code() + " - " + response.message());
