@@ -54,7 +54,7 @@
 
         <!-- CartActivity -->
         <activity
-            android:name=".CartActivity"
+            android:name=".Activity.CartActivity"
             android:exported="false" />
 
         <!-- OrderTrackingActivity -->

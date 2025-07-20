@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                                 String name = user.getName();
                                 String email = user.getEmail();
 
-                                SharedPrefManager sharedPrefManager = new SharedPrefManager(LoginActivity.this);
+                                SharedPrefManager sharedPrefManager = new SharedPrefManager(getApplicationContext());
                                 sharedPrefManager.saveToken(token);
                                 sharedPrefManager.saveUserInfo(name, email); // Lưu tên và email
 

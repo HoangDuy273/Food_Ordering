@@ -1,4 +1,4 @@
-package com.example.food_ordering;
+package com.example.food_ordering.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,10 +37,12 @@ public class CartActivity extends AppCompatActivity {
     private SharedPrefManager sharedPrefManager;
 
     // Define interfaces for CartAdapter
+    @FunctionalInterface
     public interface OnQuantityChangedListener {
         void onQuantityChanged();
     }
 
+    @FunctionalInterface
     public interface OnRemoveItemListener {
         void onRemoveItem(CartItem item, int position);
     }
@@ -52,7 +54,7 @@ public class CartActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         apiService = RetrofitClient.getApiService();
-        sharedPrefManager = new SharedPrefManager(this);
+        sharedPrefManager = new SharedPrefManager(getApplicationContext());
         cartItems = new ArrayList<>();
 
         // Initialize RecyclerView
@@ -86,6 +88,7 @@ public class CartActivity extends AppCompatActivity {
 
     private void fetchCartItems() {
         String token = sharedPrefManager.getToken();
+        Log.d("TOKEN_DEBUG", "Token: " + token);
         if (token == null) {
             Toast.makeText(this, "Vui lòng đăng nhập để xem giỏ hàng!", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(CartActivity.this, IntroActivity.class);
@@ -302,7 +305,16 @@ public class CartActivity extends AppCompatActivity {
                         intent.putExtra("orderId", orderId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
+
                         finish();
+
+
+                        // Chuyển hướng tới OrderTrackingActivity
+                        Intent trackingIntent = new Intent(CartActivity.this, com.example.food_ordering.OrderTrackingActivity.class);
+                        trackingIntent.putExtra("orderId", orderId);
+                        startActivity(trackingIntent);
+                        finish(); // Đóng CartActivity
+
                     });
                 } else {
                     Log.e(TAG, "API Error: " + response.code() + " - " + response.message());
