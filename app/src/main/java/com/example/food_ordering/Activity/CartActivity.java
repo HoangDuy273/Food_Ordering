@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.food_ordering.Activity.IntroActivity;
 import com.example.food_ordering.Activity.MainActivity;
 import com.example.food_ordering.Activity.OrderSuccessActivity;
+import com.example.food_ordering.Activity.OrderTrackingActivity;
 import com.example.food_ordering.Adapter.CartAdapter;
 import com.example.food_ordering.databinding.ActivityCartBinding;
 import com.example.food_ordering.model.CartResponse;
@@ -305,16 +306,7 @@ public class CartActivity extends AppCompatActivity {
                         intent.putExtra("orderId", orderId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
-
                         finish();
-
-
-                        // Chuyển hướng tới OrderTrackingActivity
-                        Intent trackingIntent = new Intent(CartActivity.this, com.example.food_ordering.OrderTrackingActivity.class);
-                        trackingIntent.putExtra("orderId", orderId);
-                        startActivity(trackingIntent);
-                        finish(); // Đóng CartActivity
-
                     });
                 } else {
                     Log.e(TAG, "API Error: " + response.code() + " - " + response.message());
