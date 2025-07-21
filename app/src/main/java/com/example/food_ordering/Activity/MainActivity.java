@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
     private void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenu().add("Profile");
+        popupMenu.getMenu().add("Favorite");  // Thêm dòng này
         popupMenu.getMenu().add("Order");
         popupMenu.getMenu().add("Logout");
 
@@ -137,6 +138,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getTitle().equals("Profile")) {
                     Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getTitle().equals("Favorite")) {  // Thêm block này
+                    Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
                     startActivity(intent);
                     return true;
                 } else if (item.getTitle().equals("Order")) {
@@ -162,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
         popupMenu.show();
     }
 

@@ -58,12 +58,18 @@
             android:name=".Activity.OrderTrackingActivity"
             android:exported="false" />
 
+
         <activity
             android:name=".Activity.ProfileActivity"
             android:exported="false" />
 
         <activity android:name=".Activity.PaymentMethodActivity" />
         <activity android:name=".Activity.AddCardActivity" />
+
+        <activity
+            android:name=".Activity.FavoriteActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
