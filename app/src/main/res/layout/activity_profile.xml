@@ -91,5 +91,12 @@
             android:backgroundTint="#FF5722"
             android:textColor="#FFF"
             android:drawableLeft="@android:drawable/ic_lock_idle_lock" />
+
+        <Button
+            android:id="@+id/manageAddressButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quản lý địa chỉ"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 </ScrollView>

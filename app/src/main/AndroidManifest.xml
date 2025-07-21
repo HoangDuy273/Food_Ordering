@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:usesCleartextTraffic="true"
@@ -47,23 +49,19 @@
             android:name=".Activity.OrderListActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.OrderSuccessActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".Activity.CartActivity"
             android:exported="false" />
-
         <activity
-            android:name=".Activity.OrderTrackingActivity"
+            android:name=".OrderTrackingActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.ProfileActivity"
             android:exported="false" />
 
-        <activity android:name=".Activity.PaymentMethodActivity" />
-        <activity android:name=".Activity.AddCardActivity" />
+        <activity
+            android:name=".Activity.AddressActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

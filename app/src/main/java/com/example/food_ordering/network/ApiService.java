@@ -28,6 +28,10 @@ import com.example.food_ordering.model.ForgotPasswordRequest;
 import com.example.food_ordering.model.ForgotPasswordResponse;
 import com.example.food_ordering.model.ResetPasswordRequest;
 import com.example.food_ordering.model.ResetPasswordResponse;
+import com.example.food_ordering.model.AddressResponse;
+import com.example.food_ordering.model.Address;
+
+import java.util.Map;
 
 public interface ApiService {
     // My Profile
@@ -94,6 +98,21 @@ public interface ApiService {
 
     @POST("/api/auth/reset-password")
     Call<ResetPasswordResponse> resetPassword(@Body ResetPasswordRequest request);
+
+    @GET("/api/users/addresses")
+    Call<AddressResponse> getAddresses(@Header("Authorization") String token);
+
+    @PUT("/api/users/address/{addressId}")
+    Call<AddressResponse> updateAddress(@Header("Authorization") String token, @Path("addressId") String addressId, @Body Address address);
+
+    @DELETE("/api/users/address/{addressId}")
+    Call<AddressResponse> deleteAddress(@Header("Authorization") String token, @Path("addressId") String addressId);
+
+    @PUT("/api/users/address/default/{addressId}")
+    Call<AddressResponse> setDefaultAddress(@Header("Authorization") String token, @Path("addressId") String addressId);
+
+    @POST("/api/users/address")
+    Call<AddressResponse> addAddress(@Header("Authorization") String token, @Body Map<String, Object> address);
 
     // Lớp CartItemRequest để gửi dữ liệu lên backend
     class CartItemRequest {

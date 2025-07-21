@@ -29,9 +29,12 @@ import com.google.gson.Gson;
 
 import com.example.food_ordering.model.ChangePasswordRequest;
 import com.example.food_ordering.model.ChangePasswordResponse;
+import android.content.Intent;
+import com.example.food_ordering.Activity.AddressActivity;
 
 public class ProfileActivity extends AppCompatActivity {
     private TextView nameTextView, emailTextView, createdAtTextView;
+    private Button editProfileButton, changePasswordButton, manageAddressButton;
     private ApiService apiService;
     private SharedPrefManager sharedPrefManager;
 
@@ -43,6 +46,9 @@ public class ProfileActivity extends AppCompatActivity {
         nameTextView = findViewById(R.id.nameTextView);
         emailTextView = findViewById(R.id.emailTextView);
         createdAtTextView = findViewById(R.id.createdAtTextView);
+        editProfileButton = findViewById(R.id.editProfileButton);
+        changePasswordButton = findViewById(R.id.changePasswordButton);
+        manageAddressButton = findViewById(R.id.manageAddressButton);
 
         apiService = RetrofitClient.getApiService();
         sharedPrefManager = new SharedPrefManager(this);
@@ -73,12 +79,12 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        Button editProfileButton = findViewById(R.id.editProfileButton);
         editProfileButton.setOnClickListener(v -> showEditProfileDialog());
-
-        // Thêm listener cho nút đổi mật khẩu
-        Button changePasswordButton = findViewById(R.id.changePasswordButton);
         changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
+        manageAddressButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, AddressActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void showEditProfileDialog() {

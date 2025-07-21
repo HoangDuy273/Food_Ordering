@@ -18,6 +18,7 @@ import com.example.food_ordering.model.OrderResponse;
 import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
 import com.example.food_ordering.network.SharedPrefManager;
+import com.example.food_ordering.model.Address;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class CartActivity extends AppCompatActivity {
     private List<CartItem> cartItems;
     private ApiService apiService;
     private SharedPrefManager sharedPrefManager;
+    private Address selectedAddress;
 
     // Define interfaces for CartAdapter
     @FunctionalInterface
@@ -55,6 +57,13 @@ public class CartActivity extends AppCompatActivity {
         apiService = RetrofitClient.getApiService();
         sharedPrefManager = new SharedPrefManager(getApplicationContext());
         cartItems = new ArrayList<>();
+
+        // Lấy địa chỉ mặc định khi vào giỏ hàng
+        fetchDefaultAddress();
+
+        // Khi ấn vào địa chỉ giao hàng hoặc nút thay đổi
+        binding.editTextDeliveryAddress.setFocusable(false);
+        binding.editTextDeliveryAddress.setOnClickListener(v -> openAddressSelector());
 
         // Initialize RecyclerView
         initCartRecyclerView();
@@ -275,7 +284,11 @@ public class CartActivity extends AppCompatActivity {
         }
 
         // Giả định lấy thông tin giao hàng từ người dùng
-        String deliveryAddress = "123 Main St, LA California"; // Giá trị mặc định
+        String deliveryAddress = binding.editTextDeliveryAddress.getText().toString().trim();
+        if (deliveryAddress.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập địa chỉ giao hàng!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String phoneNumber = "1234567890"; // Giá trị mặc định
         String notes = binding.editTextText.getText().toString().trim(); // Sử dụng trường coupon làm notes tạm thời
         String paymentMethod = "Cash on Delivery"; // Giá trị mặc định
@@ -328,6 +341,50 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(CartActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void fetchDefaultAddress() {
+        String token = sharedPrefManager.getToken();
+        if (token == null) return;
+        apiService.getAddresses("Bearer " + token).enqueue(new retrofit2.Callback<com.example.food_ordering.model.AddressResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.example.food_ordering.model.AddressResponse> call, retrofit2.Response<com.example.food_ordering.model.AddressResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    List<com.example.food_ordering.model.Address> addresses = response.body().getAddresses();
+                    for (com.example.food_ordering.model.Address addr : addresses) {
+                        if (addr.isDefault()) {
+                            selectedAddress = addr;
+                            binding.editTextDeliveryAddress.setText(formatAddress(addr));
+                            break;
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onFailure(retrofit2.Call<com.example.food_ordering.model.AddressResponse> call, Throwable t) {}
+        });
+    }
+
+    private String formatAddress(com.example.food_ordering.model.Address addr) {
+        return addr.getStreet() + ", " + addr.getCity() + ", " + addr.getState() + ", " + addr.getCountry();
+    }
+
+    private void openAddressSelector() {
+        Intent intent = new Intent(this, AddressActivity.class);
+        intent.putExtra("selectMode", true);
+        startActivityForResult(intent, 1001);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            com.example.food_ordering.model.Address addr = (com.example.food_ordering.model.Address) data.getSerializableExtra("selectedAddress");
+            if (addr != null) {
+                selectedAddress = addr;
+                binding.editTextDeliveryAddress.setText(formatAddress(addr));
+            }
+        }
     }
 
     public static class CartItem implements android.os.Parcelable {

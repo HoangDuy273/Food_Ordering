@@ -29,18 +29,38 @@ import com.example.food_ordering.network.ApiService;
 import com.example.food_ordering.network.RetrofitClient;
 import com.example.food_ordering.network.SharedPrefManager;
 
-import java.util.ArrayList;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+
+import java.io.IOException;
 import java.util.List;
+import android.location.Address;
+import android.location.Geocoder;
+import java.util.ArrayList;
+import java.util.Locale;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private ActivityMainBinding binding;
     private ApiService apiService;
     private SharedPrefManager sharedPrefManager;
+    private ActivityResultLauncher<String> locationPermissionRequest;
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +77,19 @@ public class MainActivity extends AppCompatActivity {
 
         apiService = RetrofitClient.getApiService();
         sharedPrefManager = new SharedPrefManager(this);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Khởi tạo launcher để xử lý kết quả xin quyền
+        locationPermissionRequest = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // Người dùng đã cấp quyền, tiến hành lấy vị trí
+                fetchCurrentLocation();
+            } else {
+                // Người dùng từ chối, có thể hiển thị thông báo hoặc dùng vị trí mặc định
+                Toast.makeText(this, "Không có quyền truy cập vị trí", Toast.LENGTH_SHORT).show();
+                binding.locationText.setText("Hà Nội"); // Ví dụ vị trí mặc định
+            }
+        });
 
         // Kiểm tra token ngay khi vào MainActivity
         if (!sharedPrefManager.isLoggedIn()) {
@@ -167,24 +200,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupLocationFilter() {
-        LinearLayout locationLayout = findViewById(R.id.locationLayout);
-        TextView locationText = findViewById(R.id.locationText);
-        locationLayout.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(this, v);
-            popupMenu.getMenu().add("LA California");
-            popupMenu.getMenu().add("New York");
-            popupMenu.getMenu().add("San Francisco");
-
-            popupMenu.setOnMenuItemClickListener(item -> {
-                String selectedLocation = item.getTitle().toString();
-                if (locationText != null) {
-                    locationText.setText(selectedLocation);
-                }
-                Toast.makeText(MainActivity.this, "Selected Location: " + selectedLocation, Toast.LENGTH_SHORT).show();
-                return true;
-            });
-            popupMenu.show();
+        binding.locationLayout.setOnClickListener(v -> {
+            // Khi người dùng bấm vào, yêu cầu lấy vị trí
+            requestLocationPermission();
         });
+    }
+
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Đã có quyền, lấy vị trí luôn
+            fetchCurrentLocation();
+        } else {
+            // Chưa có quyền, hiển thị dialog xin quyền
+            locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void fetchCurrentLocation() {
+        // Sử dụng getCurrentLocation để lấy vị trí mới nhất
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken())
+            .addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    // Lấy vị trí thành công, chuyển đổi sang địa chỉ
+                    updateLocationUI(location);
+                } else {
+                    Toast.makeText(this, "Không thể lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
+                    binding.locationText.setText("Unknown");
+                }
+            })
+            .addOnFailureListener(this, e -> {
+                Toast.makeText(this, "Lỗi khi lấy vị trí: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                binding.locationText.setText("Error");
+            });
+    }
+
+    private void updateLocationUI(android.location.Location location) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                String cityName = addresses.get(0).getLocality();
+                if (cityName != null && !cityName.isEmpty()) {
+                    binding.locationText.setText(cityName);
+                } else {
+                    // Nếu không có tên thành phố, thử lấy tên khu vực
+                    binding.locationText.setText(addresses.get(0).getSubAdminArea());
+                }
+            } else {
+                 binding.locationText.setText("Not Found");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            binding.locationText.setText("Geocoder Error");
+        }
     }
 
     private void setupTimeFilter() {
