@@ -223,7 +223,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/btnPlaceOrder"
         android:layout_width="0dp"
         android:layout_height="56dp"
@@ -231,7 +231,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/red_button_background2"
-        android:backgroundTint="@null"
         android:text="Place Order"
         android:textColor="@color/white"
         android:textSize="18sp"

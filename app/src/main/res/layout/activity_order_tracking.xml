@@ -1,189 +1,248 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="@color/white"
+    android:padding="16dp">
 
-    <!-- Header -->
+    <!-- Header Section -->
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textViewTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Chi tiết đơn hàng"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#222"
-        android:layout_gravity="center"
-        android:layout_marginBottom="24dp"/>
+        android:textColor="@color/black"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
-    <!-- Order Info Card -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Order Information Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardOrderInfo"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/card_background"
-        android:padding="16dp"
-        android:layout_marginBottom="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mã đơn hàng"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#222"
-            android:layout_marginBottom="8dp"/>
-
-        <TextView
-            android:id="@+id/tvOrderId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="N/A"
-            android:textSize="14sp"
-            android:textColor="#666"
-            android:layout_marginBottom="16dp"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"
-            android:layout_marginBottom="16dp"/>
+        android:layout_marginTop="32dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:padding="20dp">
 
             <TextView
+                android:id="@+id/textViewOrderIdLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mã đơn hàng"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewOrderId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="N/A"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/textViewStatusLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Trạng thái"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#222"/>
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"/>
-
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/circle_orange"
-                android:layout_marginEnd="8dp"/>
-
-            <TextView
-                android:id="@+id/tvStatus"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đang vận chuyển"
-                android:textSize="14sp"
-                android:textColor="#FF9800"/>
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Order Progress Card -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/card_background"
-        android:padding="16dp"
-        android:layout_marginBottom="32dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tiến độ đơn hàng"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#222"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Progress Steps -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Step 1: Ordered -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginTop="4dp">
 
                 <View
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:background="@drawable/circle_green"
-                    android:layout_marginEnd="12dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đã đặt hàng"
-                    android:textSize="14sp"
-                    android:textColor="#4CAF50"/>
-            </LinearLayout>
-
-            <!-- Step 2: In Transit -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-
-                <View
+                    android:id="@+id/statusIndicator"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:background="@drawable/circle_orange"
-                    android:layout_marginEnd="12dp"/>
+                    android:layout_marginEnd="8dp" />
 
                 <TextView
+                    android:id="@+id/textViewStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Đang vận chuyển"
-                    android:textSize="14sp"
-                    android:textColor="#FF9800"/>
+                    android:textSize="16sp"
+                    android:textColor="@color/orange"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
-            <!-- Step 3: Delivered -->
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Status Progress Section -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintTop_toBottomOf="@id/cardOrderInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiến độ đơn hàng"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Progress Steps -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical">
 
-                <View
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:background="@drawable/circle_green"
-                    android:layout_marginEnd="12dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Step 1: Đã đặt hàng -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Đã giao hàng"
-                    android:textSize="14sp"
-                    android:textColor="#4CAF50"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <View
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:background="@drawable/circle_green"
+                        android:layout_marginEnd="12dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Đã đặt hàng"
+                        android:textSize="14sp"
+                        android:textColor="@color/green" />
+
+                </LinearLayout>
+
+                <!-- Step 2: Đang vận chuyển -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <View
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:background="@drawable/circle_orange"
+                        android:layout_marginEnd="12dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Đang vận chuyển"
+                        android:textSize="14sp"
+                        android:textColor="@color/orange" />
+
+
+
+                </LinearLayout>
+
+                <!-- Step 3: Đã giao hàng -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:background="@drawable/circle_gray"
+                        android:layout_marginEnd="12dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Đã giao hàng"
+                        android:textSize="14sp"
+                        android:textColor="@color/black" />
+
+
+                </LinearLayout>
+
             </LinearLayout>
+
         </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:id="@+id/layoutButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardProgress"
+        app:layout_constraintVertical_bias="1.0">
+
+
+        <Button
+            android:id="@+id/buttonBackToHome"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Quay về Home"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_outline"
+            android:layout_marginBottom="16dp" />
+
     </LinearLayout>
 
-    <!-- Back to Home Button -->
-    <Button
-        android:id="@+id/btnBackToHome"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Quay về Home"
-        android:backgroundTint="#9C27B0"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"/>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

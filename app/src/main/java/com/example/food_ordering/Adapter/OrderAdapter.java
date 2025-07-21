@@ -60,4 +60,4 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             orderDeliveryTime = itemView.findViewById(R.id.orderDeliveryTime);
         }
     }
-} 
+}

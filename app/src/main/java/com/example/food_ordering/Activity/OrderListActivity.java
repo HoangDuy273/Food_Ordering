@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.food_ordering.Activity.OrderTrackingActivity;
+import com.example.food_ordering.OrderTrackingActivity;
 import com.example.food_ordering.R;
 import com.example.food_ordering.databinding.ActivityOrderListBinding;
 import com.example.food_ordering.model.OrderResponse;
