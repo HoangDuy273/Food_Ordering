@@ -4,17 +4,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
 import com.example.food_ordering.Domain.Foods;
 import com.example.food_ordering.R;
 import com.example.food_ordering.databinding.ActivityDetailBinding;
 import com.example.food_ordering.network.ApiService;
+import com.example.food_ordering.network.FavoriteManager;
 import com.example.food_ordering.network.RetrofitClient;
 import com.example.food_ordering.network.SharedPrefManager;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,6 +24,7 @@ public class DetailActivity extends AppCompatActivity {
     private int quantity = 0;
     private boolean isLiked = false;
     private SharedPrefManager sharedPrefManager;
+    private FavoriteManager favoriteManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +32,9 @@ public class DetailActivity extends AppCompatActivity {
         binding = ActivityDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Khởi tạo SharedPrefManager
+        // Khởi tạo SharedPrefManager và FavoriteManager
         sharedPrefManager = new SharedPrefManager(this);
+        favoriteManager = new FavoriteManager(this);
 
         // Bật nút Back trên ActionBar
         if (getSupportActionBar() != null) {
@@ -43,7 +43,6 @@ public class DetailActivity extends AppCompatActivity {
 
         // Lấy dữ liệu từ Intent
         object = (Foods) getIntent().getSerializableExtra("object");
-
         if (object != null && object.getId() != null) {
             // Hiển thị thông tin
             binding.titleTxt.setText(object.getTitle());
@@ -56,6 +55,9 @@ public class DetailActivity extends AppCompatActivity {
 
             // Log Id của Foods để kiểm tra
             Log.d(TAG, "Food Id: " + object.getId());
+
+            // Cập nhật UI favorite ban đầu
+            updateFavoriteUI();
 
             // Khởi tạo số lượng và giá tổng
             updateQuantityAndTotal();
@@ -82,16 +84,20 @@ public class DetailActivity extends AppCompatActivity {
             updateQuantityAndTotal();
         });
 
-        // Xử lý nút "thích"
+        // Xử lý nút "thích" - CẬP NHẬT PHẦN NÀY
         binding.favBtn.setOnClickListener(v -> {
-            isLiked = !isLiked;
-            if (isLiked) {
-                binding.favBtn.setImageResource(R.drawable.favorite_red);
-                Toast.makeText(this, "Đã thích!", Toast.LENGTH_SHORT).show();
+            if (favoriteManager.isFavorite(object.getId())) {
+                // Nếu đã yêu thích -> Xóa khỏi yêu thích
+                favoriteManager.removeFromFavorite(object.getId());
+                Toast.makeText(this, "Đã xóa khỏi yêu thích", Toast.LENGTH_SHORT).show();
             } else {
-                binding.favBtn.setImageResource(R.drawable.favorite_white);
-                Toast.makeText(this, "Bỏ thích!", Toast.LENGTH_SHORT).show();
+                // Nếu chưa yêu thích -> Thêm vào yêu thích
+                favoriteManager.addToFavorite(object);
+                Toast.makeText(this, "Đã thêm vào yêu thích ❤️", Toast.LENGTH_SHORT).show();
             }
+
+            // Cập nhật UI
+            updateFavoriteUI();
         });
 
         // Xử lý nút "Add to cart"
@@ -102,6 +108,15 @@ public class DetailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng chọn số lượng!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // THÊM PHƯƠNG THỨC MỚI
+    private void updateFavoriteUI() {
+        if (favoriteManager.isFavorite(object.getId())) {
+            binding.favBtn.setImageResource(R.drawable.favorite_red);
+        } else {
+            binding.favBtn.setImageResource(R.drawable.favorite_white);
+        }
     }
 
     // Cập nhật số lượng và giá tổng
@@ -124,9 +139,9 @@ public class DetailActivity extends AppCompatActivity {
         Log.d(TAG, "Sending foodId: " + foodId);
 
         ApiService.CartItemRequest cartItemRequest = new ApiService.CartItemRequest(foodId, quantity);
-
         ApiService apiService = RetrofitClient.getApiService();
         Call<ApiService.CartItemResponse> call = apiService.addToCart("Bearer " + token, cartItemRequest);
+
         call.enqueue(new Callback<ApiService.CartItemResponse>() {
             @Override
             public void onResponse(Call<ApiService.CartItemResponse> call, Response<ApiService.CartItemResponse> response) {
