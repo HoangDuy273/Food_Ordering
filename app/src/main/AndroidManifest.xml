@@ -61,6 +61,8 @@
         <activity
             android:name=".Activity.OrderTrackingActivity"
             android:exported="false" />
+        <activity android:name=".Activity.PaymentMethodActivity" />
+        <activity android:name=".Activity.AddCardActivity" />
     </application>
 
 </manifest>

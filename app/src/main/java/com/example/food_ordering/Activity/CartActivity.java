@@ -12,6 +12,7 @@ import com.example.food_ordering.Activity.IntroActivity;
 import com.example.food_ordering.Activity.MainActivity;
 import com.example.food_ordering.Activity.OrderSuccessActivity;
 import com.example.food_ordering.Activity.OrderTrackingActivity;
+import com.example.food_ordering.Activity.PaymentMethodActivity;
 import com.example.food_ordering.Adapter.CartAdapter;
 import com.example.food_ordering.databinding.ActivityCartBinding;
 import com.example.food_ordering.model.CartResponse;
@@ -83,7 +84,17 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            placeOrder();
+            // Lấy tổng tiền từ binding.tvTotal
+            String totalStr = binding.tvTotal.getText().toString().replace("$", "").trim();
+            double total = 0;
+            try {
+                total = Double.parseDouble(totalStr);
+            } catch (Exception e) {
+                total = 0;
+            }
+            Intent intent = new Intent(CartActivity.this, PaymentMethodActivity.class);
+            intent.putExtra("total_amount", total);
+            startActivity(intent);
         });
     }
 
