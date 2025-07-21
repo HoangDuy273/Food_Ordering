@@ -46,19 +46,24 @@
         <activity
             android:name=".Activity.OrderListActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activity.OrderSuccessActivity"
+            android:exported="false" />
 
         <activity
             android:name=".Activity.CartActivity"
             android:exported="false" />
 
         <activity
-            android:name=".OrderTrackingActivity"
+            android:name=".Activity.OrderTrackingActivity"
             android:exported="false" />
 
         <activity
             android:name=".Activity.ProfileActivity"
             android:exported="false" />
 
+        <activity android:name=".Activity.PaymentMethodActivity" />
+        <activity android:name=".Activity.AddCardActivity" />
     </application>
 
 </manifest>

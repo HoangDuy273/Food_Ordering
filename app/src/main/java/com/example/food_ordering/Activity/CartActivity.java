@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.food_ordering.Activity.IntroActivity;
 import com.example.food_ordering.Activity.MainActivity;
+import com.example.food_ordering.Activity.OrderSuccessActivity;
+import com.example.food_ordering.Activity.OrderTrackingActivity;
+import com.example.food_ordering.Activity.PaymentMethodActivity;
 import com.example.food_ordering.Adapter.CartAdapter;
 import com.example.food_ordering.databinding.ActivityCartBinding;
 import com.example.food_ordering.model.CartResponse;
@@ -81,7 +84,17 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            placeOrder();
+            // Lấy tổng tiền từ binding.tvTotal
+            String totalStr = binding.tvTotal.getText().toString().replace("$", "").trim();
+            double total = 0;
+            try {
+                total = Double.parseDouble(totalStr);
+            } catch (Exception e) {
+                total = 0;
+            }
+            Intent intent = new Intent(CartActivity.this, PaymentMethodActivity.class);
+            intent.putExtra("total_amount", total);
+            startActivity(intent);
         });
     }
 
@@ -300,16 +313,11 @@ public class CartActivity extends AppCompatActivity {
 
                     // Xóa giỏ hàng trước khi điều hướng
                     clearCart(() -> {
-                        // Chuyển hướng về MainActivity
-                        Intent intent = new Intent(CartActivity.this, MainActivity.class);
+                        Intent intent = new Intent(CartActivity.this, OrderSuccessActivity.class);
+                        intent.putExtra("orderId", orderId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
-
-                        // Chuyển hướng tới OrderTrackingActivity
-                        Intent trackingIntent = new Intent(CartActivity.this, com.example.food_ordering.OrderTrackingActivity.class);
-                        trackingIntent.putExtra("orderId", orderId);
-                        startActivity(trackingIntent);
-                        finish(); // Đóng CartActivity
+                        finish();
                     });
                 } else {
                     Log.e(TAG, "API Error: " + response.code() + " - " + response.message());

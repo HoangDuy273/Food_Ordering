@@ -1,35 +1,34 @@
-package com.example.food_ordering;
+package com.example.food_ordering.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.food_ordering.Activity.MainActivity;
-import com.example.food_ordering.databinding.ActivityOrderTrackingBinding;
+import com.example.food_ordering.R;
 
 public class OrderTrackingActivity extends AppCompatActivity {
-    private ActivityOrderTrackingBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityOrderTrackingBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        // Hiển thị thông tin đơn hàng (lấy từ Intent)
+        setContentView(R.layout.activity_order_tracking);
+        
+        // Lấy Order ID từ Intent
         String orderId = getIntent().getStringExtra("orderId");
-        binding.textViewOrderId.setText("Order ID: " + (orderId != null ? orderId : "N/A"));
-        binding.textViewStatus.setText("Status: Đang vận chuyển");
-
-        // Xử lý nút quay về Home
-        Button backToHomeButton = findViewById(R.id.buttonBackToHome);
-        backToHomeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OrderTrackingActivity.this, MainActivity.class);
+        TextView tvOrderId = findViewById(R.id.tvOrderId);
+        if (orderId != null && !orderId.isEmpty()) {
+            tvOrderId.setText(orderId);
+        } else {
+            tvOrderId.setText("N/A");
+        }
+        
+        // Xử lý nút Back to Home
+        Button btnBackToHome = findViewById(R.id.btnBackToHome);
+        btnBackToHome.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            finish(); // Đóng activity hiện tại
+            finish();
         });
     }
 }
