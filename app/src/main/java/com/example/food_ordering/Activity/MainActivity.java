@@ -136,7 +136,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getTitle().equals("Profile")) {
-                    Toast.makeText(MainActivity.this, "Profile clicked", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                    startActivity(intent);
                     return true;
                 } else if (item.getTitle().equals("Order")) {
                     if (!sharedPrefManager.isLoggedIn()) {

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="48dp"
+    android:background="#FAFAFA"
     tools:context=".Activity.LoginActivity">
 
     <ScrollView
@@ -15,102 +16,134 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:padding="24dp">
 
+            <!-- Logo -->
             <ImageView
                 android:id="@+id/imageView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:src="@drawable/logo"
                 android:layout_marginTop="48dp"
-                tools:srcCompat="@drawable/logo" />
+                android:layout_marginBottom="16dp"
+                android:contentDescription="App Logo" />
 
+            <!-- App Name -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginBottom="32dp">
 
                 <TextView
                     android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Food"
-                    android:layout_marginEnd="8dp"
-                    android:textSize="45dp"
+                    android:textSize="40sp"
                     android:textStyle="bold"
                     android:textColor="@color/blue_grey"
-                    />
+                    android:layout_marginEnd="6dp" />
 
                 <TextView
                     android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="App"
-                    android:layout_marginEnd="8dp"
-                    android:textSize="45dp"
-                    android:textColor="@color/blue_grey"
-                    />
+                    android:textSize="40sp"
+                    android:textColor="@color/blue_grey" />
             </LinearLayout>
 
+            <!-- Email -->
             <EditText
                 android:id="@+id/userEdt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
                 android:hint="Email address"
-                android:textAlignment="center"
-                android:textColorHint="@color/blue_grey"
-                android:textSize="16sp"
-                android:ems="10"
+                android:drawableStart="@android:drawable/ic_dialog_email"
+                android:drawablePadding="10dp"
                 android:background="@drawable/edittext_background"
-                android:inputType="text"
-                />
+                android:textColorHint="#999"
+                android:inputType="textEmailAddress"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textSize="16sp"
+                android:layout_marginBottom="24dp" /> <!-- tăng từ 16dp lên 24dp -->
 
+            <!-- Password -->
             <EditText
                 android:id="@+id/passEdt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
                 android:hint="Password"
-                android:textAlignment="center"
-                android:textColorHint="@color/blue_grey"
-                android:textSize="16sp"
-                android:ems="10"
+                android:drawableStart="@android:drawable/ic_lock_idle_lock"
+                android:drawablePadding="10dp"
                 android:background="@drawable/edittext_background"
+                android:textColorHint="#999"
                 android:inputType="textPassword"
-                />
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <!-- Forgot Password -->
+            <TextView
+                android:id="@+id/forgotPasswordTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Forgot Password?"
+                android:textColor="@color/red"
+                android:textSize="14sp"
+                android:layout_gravity="end"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Login Button -->
+            <Button
                 android:id="@+id/loginBtn"
-                style="@android:style/Widget.Button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/red_button_backgound"
+                android:backgroundTint="@color/red"
                 android:text="Login"
+                android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp" />
 
+            <!-- No account notice -->
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="If You Don't Have An Account"
+                android:textColor="#888"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Signup -->
+            <!-- Signup -->
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textSize="16sp"
-                android:textAlignment="center"
                 android:text="Don't have an account? Signup"
                 android:textColor="@color/blue_grey"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
                 android:clickable="true"
-                android:focusable="true"/>
-            />
+                android:focusable="true"
+                android:minHeight="48dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
         </LinearLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

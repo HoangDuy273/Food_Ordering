@@ -8,7 +8,9 @@ import com.example.food_ordering.model.OrderRequest;
 import com.example.food_ordering.model.OrderResponse;
 import com.example.food_ordering.model.RegisterRequest;
 import com.example.food_ordering.model.RegisterResponse;
-
+import com.example.food_ordering.model.UpdateProfileRequest;
+import com.example.food_ordering.model.UserProfile;
+import com.example.food_ordering.model.UserProfileResponse;
 import java.util.List;
 
 import retrofit2.Call;
@@ -20,8 +22,18 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import com.example.food_ordering.model.ChangePasswordRequest;
+import com.example.food_ordering.model.ChangePasswordResponse;
+import com.example.food_ordering.model.ForgotPasswordRequest;
+import com.example.food_ordering.model.ForgotPasswordResponse;
+import com.example.food_ordering.model.ResetPasswordRequest;
+import com.example.food_ordering.model.ResetPasswordResponse;
 
 public interface ApiService {
+    // My Profile
+    @GET("/api/users/profile")
+    Call<UserProfileResponse> getUserProfile(@Header("Authorization") String token);
+    
     // Authentication endpoints
     @POST("/api/auth/register")
     Call<RegisterResponse> register(@Body RegisterRequest request);
@@ -64,6 +76,24 @@ public interface ApiService {
 
     @GET("/api/orders")
     Call<List<OrderResponse>> getOrders(@Header("Authorization") String token);
+
+    @PUT("/api/users/profile")
+    Call<UserProfileResponse> updateUserProfile(
+        @Header("Authorization") String token,
+        @Body UpdateProfileRequest request
+    );
+
+    @PUT("/api/users/change-password")
+    Call<ChangePasswordResponse> changePassword(
+        @Header("Authorization") String token,
+        @Body ChangePasswordRequest request
+    );
+
+    @POST("/api/auth/forgot-password")
+    Call<ForgotPasswordResponse> forgotPassword(@Body ForgotPasswordRequest request);
+
+    @POST("/api/auth/reset-password")
+    Call<ResetPasswordResponse> resetPassword(@Body ResetPasswordRequest request);
 
     // Lớp CartItemRequest để gửi dữ liệu lên backend
     class CartItemRequest {

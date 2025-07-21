@@ -16,7 +16,6 @@
         android:theme="@style/Theme.Food_Ordering"
         tools:targetApi="31">
 
-        <!-- IntroActivity là màn hình khởi đầu -->
         <activity
             android:name=".Activity.IntroActivity"
             android:exported="true">
@@ -26,7 +25,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Các activity khác -->
         <activity
             android:name=".Activity.ListFoodsActivity"
             android:exported="true" />
@@ -49,15 +47,18 @@
             android:name=".Activity.OrderListActivity"
             android:exported="false" />
 
-        <!-- CartActivity -->
         <activity
             android:name=".Activity.CartActivity"
             android:exported="false" />
 
-        <!-- OrderTrackingActivity -->
         <activity
             android:name=".OrderTrackingActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".Activity.ProfileActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
