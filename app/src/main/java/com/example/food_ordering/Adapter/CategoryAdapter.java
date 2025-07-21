@@ -92,7 +92,7 @@ public class CategoryAdapter extends BaseAdapter {
 
         // Thêm sự kiện nhấn vào danh mục với log debug
         convertView.setOnClickListener(v -> {
-            int categoryId = category.getId();
+            String categoryId = category.getId();
             String categoryName = category.getName();
             Log.d("CategoryAdapter", "Clicked Category - Id: " + categoryId + ", Name: " + categoryName);
             Intent intent = new Intent(context, ListFoodsActivity.class);

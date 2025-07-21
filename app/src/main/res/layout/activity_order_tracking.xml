@@ -70,9 +70,10 @@
                 android:layout_weight="1"/>
 
             <View
+                android:id="@+id/dotStatus"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:background="@drawable/circle_orange"
+                android:background="@drawable/circle_green"
                 android:layout_marginEnd="8dp"/>
 
             <TextView
@@ -81,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:text="Đang vận chuyển"
                 android:textSize="14sp"
-                android:textColor="#FF9800"/>
+                android:textColor="@color/green"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -118,6 +119,7 @@
                 android:layout_marginBottom="12dp">
 
                 <View
+                    android:id="@+id/dotStep1"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:background="@drawable/circle_green"
@@ -140,6 +142,7 @@
                 android:layout_marginBottom="12dp">
 
                 <View
+                    android:id="@+id/dotStep2"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:background="@drawable/circle_orange"
@@ -161,6 +164,7 @@
                 android:gravity="center_vertical">
 
                 <View
+                    android:id="@+id/dotStep3"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:background="@drawable/circle_green"

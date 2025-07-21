@@ -10,7 +10,7 @@ public class Foods implements Serializable {
     @SerializedName("BestFood")
     private boolean BestFood;
     @SerializedName("CategoryId")
-    private int CategoryId;
+    private String CategoryId;
     @SerializedName("Description")
     private String Description;
     @SerializedName("ImagePath")
@@ -32,7 +32,7 @@ public class Foods implements Serializable {
 
     public Foods() {}
 
-    public Foods(String id, boolean bestFood, int categoryId, String description, String imagePath,
+    public Foods(String id, boolean bestFood, String categoryId, String description, String imagePath,
                  Location location, Price price, double star, Time time, String title,
                  String createdAt, String updatedAt) {
         this.Id = id;
@@ -54,8 +54,8 @@ public class Foods implements Serializable {
     public void setId(String id) { this.Id = id; }
     public boolean isBestFood() { return BestFood; }
     public void setBestFood(boolean bestFood) { this.BestFood = bestFood; }
-    public int getCategoryId() { return CategoryId; }
-    public void setCategoryId(int categoryId) { this.CategoryId = categoryId; }
+    public String getCategoryId() { return CategoryId; }
+    public void setCategoryId(String categoryId) { this.CategoryId = categoryId; }
     public String getDescription() { return Description; }
     public void setDescription(String description) { this.Description = description; }
     public String getImagePath() { return ImagePath; }
@@ -78,7 +78,7 @@ public class Foods implements Serializable {
     // Alias
     public String getName() { return Title; }
     public String getImageUrl() { return ImagePath; }
-    public String getCategory() { return String.valueOf(CategoryId); }
+    public String getCategory() { return CategoryId; }
     public void setPic(String imageUrl) { this.ImagePath = imageUrl; }
 
     // Nested classes

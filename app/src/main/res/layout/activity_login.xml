@@ -109,7 +109,18 @@
                 android:textColor="@color/blue_grey"
                 android:clickable="true"
                 android:focusable="true"/>
-            />
+
+            <TextView
+                android:id="@+id/forgotPasswordTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:text="Forgot Password?"
+                android:textColor="@color/blue_grey"
+                android:clickable="true"
+                android:focusable="true"/>
         </LinearLayout>
     </ScrollView>
 

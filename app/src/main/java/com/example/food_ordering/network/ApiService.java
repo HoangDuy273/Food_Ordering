@@ -28,6 +28,10 @@ import com.example.food_ordering.model.ForgotPasswordRequest;
 import com.example.food_ordering.model.ForgotPasswordResponse;
 import com.example.food_ordering.model.ResetPasswordRequest;
 import com.example.food_ordering.model.ResetPasswordResponse;
+import com.example.food_ordering.Domain.Category;
+import com.example.food_ordering.Domain.FoodsResponse;
+import com.example.food_ordering.model.Coupon;
+import com.example.food_ordering.model.CouponsResponse;
 import com.example.food_ordering.model.AddressResponse;
 import com.example.food_ordering.model.Address;
 
@@ -48,18 +52,29 @@ public interface ApiService {
     @POST("/api/auth/logout")
     Call<Void> logout(@Header("Authorization") String token);
 
+    @POST("/api/auth/verify-email")
+    Call<Void> verifyEmail(@Query("email") String email, @Query("otp") String otp);
+
+    @POST("/api/auth/resend-otp")
+    Call<Void> resendOtp(@Query("email") String email);
+
     // Food endpoints
     @GET("/api/foods/best")
     Call<List<Foods>> getBestFoods();
 
     @GET("/api/foods")
     Call<List<Foods>> getAllFoods();
+    @GET("/api/foods")
+    Call<FoodsResponse> getAllFoodsObject();
 
     @GET("/api/foods/{id}")
     Call<Foods> getFoodById(@Path("id") String foodId);
 
     @GET("/api/foods/search")
     Call<List<Foods>> searchFoods(@Query("query") String searchQuery);
+
+    @GET("/api/categories")
+    Call<List<Category>> getAllCategories();
 
     // Cart endpoints
     @GET("/api/cart")
@@ -98,6 +113,12 @@ public interface ApiService {
 
     @POST("/api/auth/reset-password")
     Call<ResetPasswordResponse> resetPassword(@Body ResetPasswordRequest request);
+
+    @GET("/api/coupons")
+    Call<CouponsResponse> getActiveCoupons();
+
+    @GET("/api/coupons/check")
+    Call<com.example.food_ordering.model.Coupon> checkCoupon(@Query("code") String code, @Query("orderValue") double orderValue);
 
     @GET("/api/users/addresses")
     Call<AddressResponse> getAddresses(@Header("Authorization") String token);
@@ -179,7 +200,7 @@ public interface ApiService {
             @com.google.gson.annotations.SerializedName("BestFood")
             private boolean bestFood;
             @com.google.gson.annotations.SerializedName("CategoryId")
-            private int categoryId;
+            private String categoryId;
             @com.google.gson.annotations.SerializedName("Description")
             private String description;
             @com.google.gson.annotations.SerializedName("Star")
@@ -209,7 +230,7 @@ public interface ApiService {
                 return bestFood;
             }
 
-            public int getCategoryId() {
+            public String getCategoryId() {
                 return categoryId;
             }
 

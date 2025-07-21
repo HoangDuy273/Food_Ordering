@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.food_ordering.Adapter.FoodListAdapter;
 import com.example.food_ordering.Domain.Foods;
+import com.example.food_ordering.Domain.FoodsResponse;
 import com.example.food_ordering.databinding.ActivityListFoodsBinding;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class ListFoodsActivity extends BasicActivity {
     private static final String TAG = "ListFoodsActivity";
     private ActivityListFoodsBinding binding;
     private FoodListAdapter adapterListFoods;
-    private int categoryId;
+    private String categoryId;
     private String categoryName;
     private String searchQuery;
     private boolean isSearch;
@@ -38,7 +39,7 @@ public class ListFoodsActivity extends BasicActivity {
     }
 
     private void getIntentExtra() {
-        categoryId = getIntent().getIntExtra("CategoryId", 0);
+        categoryId = getIntent().getStringExtra("CategoryId");
         categoryName = getIntent().getStringExtra("CategoryName");
         searchQuery = getIntent().getStringExtra("searchQuery");
         isSearch = getIntent().getBooleanExtra("isSearch", false);
@@ -52,6 +53,7 @@ public class ListFoodsActivity extends BasicActivity {
         binding.progressBar.setVisibility(View.VISIBLE);
 
         if (isSearch && searchQuery != null && !searchQuery.trim().isEmpty()) {
+            // Chỉ gọi đúng apiService.searchFoods(query)
             searchFoodsByName(searchQuery.trim());
         } else {
             getAllFoods();
@@ -60,28 +62,24 @@ public class ListFoodsActivity extends BasicActivity {
 
     private void getAllFoods() {
         Log.d(TAG, "Fetching all foods with categoryId: " + categoryId);
-        Call<List<Foods>> call = apiService.getAllFoods();
-        call.enqueue(new Callback<List<Foods>>() {
+        Call<FoodsResponse> call = apiService.getAllFoodsObject();
+        call.enqueue(new Callback<FoodsResponse>() {
             @Override
-            public void onResponse(Call<List<Foods>> call, Response<List<Foods>> response) {
+            public void onResponse(Call<FoodsResponse> call, Response<FoodsResponse> response) {
                 binding.progressBar.setVisibility(View.GONE);
-
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Foods> allFoods = response.body();
+                if (response.isSuccessful() && response.body() != null && response.body().getFoods() != null) {
+                    List<Foods> allFoods = response.body().getFoods();
                     Log.d(TAG, "Received " + allFoods.size() + " foods from API");
                     List<Foods> filteredFoods = new ArrayList<>();
-
                     for (Foods food : allFoods) {
-                        Log.d(TAG, "Checking food: " + food.getTitle() + " (API CategoryId: " + food.getCategoryId() + ")");
-                        if (categoryId == 0 || categoryId == food.getCategoryId()) {
+                        // Nếu categoryId là null, "0", số, hoặc không phải ObjectId 24 ký tự, hiển thị tất cả
+                        if (categoryId == null || categoryId.equals("0") || !categoryId.matches("^[0-9a-fA-F]{24}$")) {
                             filteredFoods.add(food);
-                            Log.d(TAG, "Added food: " + food.getTitle() + " (API CategoryId: " + food.getCategoryId() + ") for CategoryId " + categoryId);
-                        } else {
-                            Log.d(TAG, "Skipped food: " + food.getTitle() + " (API CategoryId: " + food.getCategoryId() + ") - Does not match CategoryId " + categoryId);
+                        } else if (categoryId.equals(food.getCategoryId())) {
+                            filteredFoods.add(food);
                         }
                     }
                     Log.d(TAG, "Filtered foods count: " + filteredFoods.size() + " for CategoryId " + categoryId + ", Displaying category: " + categoryName);
-
                     setupRecyclerView(filteredFoods);
                 } else {
                     String errorMessage = "Không thể tải danh sách món ăn: " + response.code() + " - " + response.message();
@@ -97,7 +95,7 @@ public class ListFoodsActivity extends BasicActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Foods>> call, Throwable t) {
+            public void onFailure(Call<FoodsResponse> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
                 handleError("Lỗi kết nối mạng: " + t.getMessage());
                 Log.e(TAG, "Error loading foods", t);

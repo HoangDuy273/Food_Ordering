@@ -62,8 +62,10 @@ public class SignupActivity extends AppCompatActivity {
                         SharedPrefManager sharedPrefManager = new SharedPrefManager(SignupActivity.this);
                         sharedPrefManager.saveUserInfo(name, email); // Lưu tên và email từ input
 
-                        Toast.makeText(SignupActivity.this, "Register success! Please login.", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                        Toast.makeText(SignupActivity.this, "Đăng ký thành công! Vui lòng xác thực email.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignupActivity.this, VerificationActivity.class);
+                        intent.putExtra("email", email);
+                        startActivity(intent);
                         finish();
                     } else {
                         String msg = (response.body() != null ? response.body().getMessage() : response.message());

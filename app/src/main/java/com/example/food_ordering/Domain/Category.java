@@ -3,7 +3,7 @@ package com.example.food_ordering.Domain;
 import java.io.Serializable;
 
 public class Category implements Serializable {
-    private int id;
+    private String id;
     private String name;
     private String icon;
     private int drawableRes; // Thêm field cho drawable resource
@@ -13,7 +13,7 @@ public class Category implements Serializable {
     }
 
     // Constructor cũ (cho emoji)
-    public Category(int id, String name, String icon, int backgroundColor) {
+    public Category(String id, String name, String icon, int backgroundColor) {
         this.id = id;
         this.name = name;
         this.icon = icon;
@@ -22,7 +22,7 @@ public class Category implements Serializable {
     }
 
     // Constructor mới (cho drawable resource)
-    public Category(int id, String name, String icon, int drawableRes, int backgroundColor) {
+    public Category(String id, String name, String icon, int drawableRes, int backgroundColor) {
         this.id = id;
         this.name = name;
         this.icon = icon;
@@ -30,11 +30,11 @@ public class Category implements Serializable {
         this.backgroundColor = backgroundColor;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

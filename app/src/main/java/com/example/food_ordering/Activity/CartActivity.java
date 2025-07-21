@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.food_ordering.Activity.IntroActivity;
 import com.example.food_ordering.Activity.MainActivity;
+import com.example.food_ordering.Activity.PaymentMethodActivity;
+import com.example.food_ordering.Activity.CouponListActivity;
 import com.example.food_ordering.Adapter.CartAdapter;
 import com.example.food_ordering.databinding.ActivityCartBinding;
 import com.example.food_ordering.model.CartResponse;
@@ -27,6 +29,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.app.Activity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 public class CartActivity extends AppCompatActivity {
     private static final String TAG = "CartActivity";
@@ -35,6 +40,8 @@ public class CartActivity extends AppCompatActivity {
     private List<CartItem> cartItems;
     private ApiService apiService;
     private SharedPrefManager sharedPrefManager;
+    private ActivityResultLauncher<Intent> couponPickerLauncher;
+    private String selectedCouponCode = null;
     private Address selectedAddress;
 
     // Define interfaces for CartAdapter
@@ -58,6 +65,21 @@ public class CartActivity extends AppCompatActivity {
         sharedPrefManager = new SharedPrefManager(getApplicationContext());
         cartItems = new ArrayList<>();
 
+        // Coupon picker launcher
+        couponPickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    String couponCode = result.getData().getStringExtra("coupon_code");
+                    if (couponCode != null) {
+                        selectedCouponCode = couponCode;
+                        binding.editTextText.setText(couponCode);
+                        checkCouponAndUpdateTotal(couponCode);
+                    }
+                }
+            }
+        );
+
         // Lấy địa chỉ mặc định khi vào giỏ hàng
         fetchDefaultAddress();
 
@@ -74,15 +96,9 @@ public class CartActivity extends AppCompatActivity {
         // Handle Back button
         binding.backBtn.setOnClickListener(v -> finish());
 
-        // Handle Apply Coupon button
-        binding.buttonApplyCoupon.setOnClickListener(v -> {
-            String couponCode = binding.editTextText.getText().toString().trim();
-            if (!couponCode.isEmpty()) {
-                Toast.makeText(this, "Đã áp dụng mã: " + couponCode, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Vui lòng nhập mã giảm giá", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Mở màn chọn coupon khi nhấn vào ô nhập hoặc nút Apply Coupon
+        binding.editTextText.setOnClickListener(v -> openCouponList());
+        binding.buttonApplyCoupon.setOnClickListener(v -> openCouponList());
 
         // Handle Place Order button
         binding.btnPlaceOrder.setOnClickListener(v -> {
@@ -90,7 +106,18 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(this, "Giỏ hàng trống!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            placeOrder();
+            // Tính tổng tiền
+            double subtotal = 0;
+            for (CartItem item : cartItems) {
+                subtotal += item.getPrice() * item.getQuantity();
+            }
+            double delivery = 10.00;
+            double tax = 1.00;
+            double total = subtotal + delivery + tax;
+            // Chuyển sang màn PaymentMethodActivity
+            Intent intent = new Intent(CartActivity.this, PaymentMethodActivity.class);
+            intent.putExtra("total_amount", total);
+            startActivity(intent);
         });
     }
 
@@ -319,7 +346,7 @@ public class CartActivity extends AppCompatActivity {
                         startActivity(intent);
 
                         // Chuyển hướng tới OrderTrackingActivity
-                        Intent trackingIntent = new Intent(CartActivity.this, com.example.food_ordering.OrderTrackingActivity.class);
+                        Intent trackingIntent = new Intent(CartActivity.this, com.example.food_ordering.Activity.OrderTrackingActivity.class);
                         trackingIntent.putExtra("orderId", orderId);
                         startActivity(trackingIntent);
                         finish(); // Đóng CartActivity
@@ -339,6 +366,47 @@ public class CartActivity extends AppCompatActivity {
             public void onFailure(Call<OrderResponse> call, Throwable t) {
                 Log.e(TAG, "API Failure: " + t.getMessage());
                 Toast.makeText(CartActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void openCouponList() {
+        Intent intent = new Intent(this, CouponListActivity.class);
+        couponPickerLauncher.launch(intent);
+    }
+
+    private void checkCouponAndUpdateTotal(String couponCode) {
+        final double subtotal;
+        {
+            double tmp = 0;
+            for (CartItem item : cartItems) {
+                tmp += item.getPrice() * item.getQuantity();
+            }
+            subtotal = tmp;
+        }
+        apiService.checkCoupon(couponCode, subtotal).enqueue(new retrofit2.Callback<com.example.food_ordering.model.Coupon>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.example.food_ordering.model.Coupon> call, retrofit2.Response<com.example.food_ordering.model.Coupon> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    com.example.food_ordering.model.Coupon coupon = response.body();
+                    double delivery = 10.00;
+                    double tax = 1.00;
+                    double total = subtotal + delivery + tax;
+                    double discount = 0;
+                    if (coupon.getDiscountType().equals("percent")) {
+                        discount = total * (coupon.getDiscountValue() / 100.0);
+                    }
+                    total = total - discount;
+                    if (total < 0) total = 0;
+                    binding.tvTotal.setText("$" + String.format("%.2f", total));
+                    Toast.makeText(CartActivity.this, "Áp dụng mã thành công!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(CartActivity.this, "Mã không hợp lệ hoặc không đủ điều kiện!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(retrofit2.Call<com.example.food_ordering.model.Coupon> call, Throwable t) {
+                Toast.makeText(CartActivity.this, "Lỗi kiểm tra mã: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

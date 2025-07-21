@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         TextView viewAllBtn = findViewById(R.id.viewAllBtn);
         viewAllBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ListFoodsActivity.class);
-            intent.putExtra("CategoryId", 0); // 0 để hiển thị tất cả món ăn
+            intent.putExtra("CategoryId", "0"); // "0" là String để hiển thị tất cả món ăn
             intent.putExtra("CategoryName", "Tất cả món ăn");
             intent.putExtra("isSearch", false);
             startActivity(intent);
@@ -358,22 +358,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void initCategories() {
         ArrayList<Category> categories = new ArrayList<>();
-        categories.add(new Category(0, "Pizza", "", R.drawable.btn_1,
-                android.graphics.Color.parseColor("#CC66FF")));
-        categories.add(new Category(1, "Burger", "", R.drawable.btn_2,
-                android.graphics.Color.parseColor("#0099CC")));
-        categories.add(new Category(2, "Chicken", "", R.drawable.btn_3,
-                android.graphics.Color.parseColor("#FF6666")));
-        categories.add(new Category(3, "Sushi", "", R.drawable.btn_4,
-                android.graphics.Color.parseColor("#33FF33")));
-        categories.add(new Category(4, "Meat", "", R.drawable.btn_5,
-                android.graphics.Color.parseColor("#FF99FF")));
-        categories.add(new Category(5, "Hotdog", "", R.drawable.btn_6,
-                android.graphics.Color.parseColor("#33CC33")));
-        categories.add(new Category(6, "Drink", "", R.drawable.btn_7,
-                android.graphics.Color.parseColor("#FF66FF")));
-        categories.add(new Category(7, "More", "", R.drawable.btn_8,
-                android.graphics.Color.parseColor("#6699FF")));
+        categories.add(new Category("0", "Pizza", "", R.drawable.btn_1, android.graphics.Color.parseColor("#CC66FF")));
+        categories.add(new Category("1", "Burger", "", R.drawable.btn_2, android.graphics.Color.parseColor("#0099CC")));
+        categories.add(new Category("2", "Chicken", "", R.drawable.btn_3, android.graphics.Color.parseColor("#FF6666")));
+        categories.add(new Category("3", "Sushi", "", R.drawable.btn_4, android.graphics.Color.parseColor("#33FF33")));
+        categories.add(new Category("4", "Meat", "", R.drawable.btn_5, android.graphics.Color.parseColor("#FF99FF")));
+        categories.add(new Category("5", "Hotdog", "", R.drawable.btn_6, android.graphics.Color.parseColor("#33CC33")));
+        categories.add(new Category("6", "Drink", "", R.drawable.btn_7, android.graphics.Color.parseColor("#FF66FF")));
+        categories.add(new Category("7", "More", "", R.drawable.btn_8, android.graphics.Color.parseColor("#6699FF")));
         CategoryAdapter adapter = new CategoryAdapter(this, categories);
         binding.gridViewCategories.setAdapter(adapter);
     }
