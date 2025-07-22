@@ -187,43 +187,42 @@ public class ProfileActivity extends AppCompatActivity {
         String token = sharedPrefManager.getToken();
         ChangePasswordRequest request = new ChangePasswordRequest(oldPassword, newPassword, confirmPassword);
 
-        apiService.changePassword("Bearer " + token, request)
-            .enqueue(new Callback<ChangePasswordResponse>() {
-                @Override
-                public void onResponse(Call<ChangePasswordResponse> call, Response<ChangePasswordResponse> response) {
-                    // Khi API trả về thành công (mã 2xx)
-                    if (response.isSuccessful() && response.body() != null) {
-                        Toast.makeText(ProfileActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
-                        // Chỉ đóng dialog khi backend xác nhận thành công
-                        if (response.body().isSuccess()) {
-                            dialog.dismiss();
-                        }
+        apiService.changePassword("Bearer " + token, request).enqueue(new Callback<ChangePasswordResponse>() {
+            @Override
+            public void onResponse(Call<ChangePasswordResponse> call, Response<ChangePasswordResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Thành công
+                    Toast.makeText(ProfileActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    if (response.body().isSuccess()) {
+                        dialog.dismiss();
                     }
-                    // Khi API trả về lỗi (mã 4xx, 5xx)
-                    else {
-                        String errorMessage = "Có lỗi xảy ra, vui lòng thử lại.";
-                        if (response.errorBody() != null) {
-                            try {
-                                String errorJson = response.errorBody().string();
-                                Gson gson = new Gson();
-                                ChangePasswordResponse errorResponse = gson.fromJson(errorJson, ChangePasswordResponse.class);
-                                if (errorResponse != null && errorResponse.getMessage() != null && !errorResponse.getMessage().isEmpty()) {
-                                    errorMessage = errorResponse.getMessage();
-                                }
-                            } catch (Exception e) {
-                                Log.e("ChangePasswordError", "Failed to parse error response", e);
-                            }
-                        }
-                        Toast.makeText(ProfileActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                    }
-                }
+                } else {
+                    // Thất bại
+                    String errorMessage = "Có lỗi xảy ra, vui lòng thử lại.";
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorJson = response.errorBody().string();
+                            Gson gson = new Gson();
+                            ChangePasswordResponse errorResponse = gson.fromJson(errorJson, ChangePasswordResponse.class);
 
-                @Override
-                public void onFailure(Call<ChangePasswordResponse> call, Throwable t) {
-                    Toast.makeText(ProfileActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            if (errorResponse != null && errorResponse.getMessage() != null && !errorResponse.getMessage().isEmpty()) {
+                                errorMessage = errorResponse.getMessage();
+                            }
+                        } catch (Exception e) {
+                            Log.e("ChangePasswordError", "Failed to parse error response", e);
+                        }
+                    }
+                    Toast.makeText(ProfileActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 }
-            });
+            }
+
+            @Override
+            public void onFailure(Call<ChangePasswordResponse> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     // Hàm định dạng lại ngày cho đẹp
     private String formatDate(String isoDate) {
