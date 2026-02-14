@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/addressTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Địa chỉ giao hàng"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/editStreet"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:hint="Số nhà, đường"
+        android:inputType="text"
+        android:background="@color/grey"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/blue_grey"
+        android:textColorHint="@color/blue_grey"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/addressTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editCity"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:hint="Thành phố"
+        android:inputType="text"
+        android:background="@color/grey"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/blue_grey"
+        android:textColorHint="@color/blue_grey"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/editStreet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editState"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:hint="Tỉnh/Bang"
+        android:inputType="text"
+        android:background="@color/grey"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/blue_grey"
+        android:textColorHint="@color/blue_grey"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/editCity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editCountry"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:hint="Quốc gia"
+        android:inputType="text"
+        android:background="@color/grey"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/blue_grey"
+        android:textColorHint="@color/blue_grey"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/editState"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
